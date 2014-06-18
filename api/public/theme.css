@@ -1,0 +1,32 @@
+body {
+	margin-top: -35px;
+	padding-bottom: 20px;
+	background-color: #c3c3c3;
+}
+
+.theme-dropdown .dropdown-menu {
+	display: block;
+	position: static;
+	margin-bottom: 1px;
+}
+
+.theme-showcase>p>.btn {
+	margin: 1px 0;
+}
+
+.gui {
+	margin-left: 20px;
+	margin-right: 10px;
+	background-color: #3c3c3c;
+	border-width: 1px;
+	border-color: #ddd;
+	border-radius: 4px 4px 4px 4px;
+	box-shadow: 1px;
+	width: 1280px;
+	align: center;
+}
+
+h1,.h1 {
+	font-size: 36px;
+	color: darkgoldenrod;
+}
