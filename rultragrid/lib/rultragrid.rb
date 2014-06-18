@@ -81,7 +81,13 @@ module RUltraGrid
     
     def local_check
       puts "GOT LOCAL CHECK MODE\n"
-      #send_and_wait("capture.filter vbcc")
+      begin 
+        response = send_and_wait("compress param bitrate=1m\n")
+      rescue JSON::ParserError, Errno::ECONNREFUSED => e
+        puts "SOCKET ERROR: #{e.message}"
+      end
+      puts "RESPONSE--->"
+      puts response
     end
     
     def remote_check
@@ -181,26 +187,21 @@ module RUltraGrid
 #TCP SOCKET MESSAGING TO ULTRAGRID
     def send_and_wait(cmd)
       #request = cmd.to_s
-      request = cmd
+      request = cmd.to_s
+      puts request
       s = TCPSocket.open(@host, @port)
       s.print(request)
       response = s.recv(2048) # TODO: max_len ?
       s.close
-      puts response
-      #return JSON.parse(response, :symbolize_names => true)
+      return response
     end
 
-    def dont_wait(action, params = {}, delay = 0)
-      request = {
-        :action => action,
-        :params => params,
-        :delay => delay
-      }
-      return request if @testing == :request
+    def dont_wait(cmd)
+      request = cmd
       s = TCPSocket.open(@host, @port)
-      s.print(request.to_json)
+      s.print(request)
       s.close
-      response = {:error => nil}
+      response = "ok"
       return response
     end
     #END TCP SOCKET MESSAGING 

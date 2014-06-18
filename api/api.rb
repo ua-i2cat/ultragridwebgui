@@ -31,7 +31,7 @@ require 'rultragrid'
 class UltraGridAPI < Sinatra::Base
 
   set :ip, '127.0.0.1'
-  set :port, 5056
+  set :port, 5054
   set :ultragrid, RUltraGrid::UltraGrid.new(settings.ip, settings.port)
 
   def ug_exists
