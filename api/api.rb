@@ -34,10 +34,6 @@ class UltraGridAPI < Sinatra::Base
   set :port, 5054
   set :ultragrid, RUltraGrid::UltraGrid.new(settings.ip, settings.port)
 
-  def ug_exists
-    settings.ultragrid.check_ug
-  end
-
   def dashboard (id = 1)
     k2s =
     lambda do |h|
@@ -49,9 +45,12 @@ class UltraGridAPI < Sinatra::Base
         ] : h
     end
 
-    if ug_exists
-      settings.ultragrid.run_ug
-
+    if settings.ultragrid.have_uv
+      puts settings.ultragrid.get_curr_state
+            
+      #parse curr_state to liquid params (hash to vector)
+      
+      #return index
       liquid :index
 #      
 #      #Input streams json parsing
@@ -145,10 +144,12 @@ class UltraGridAPI < Sinatra::Base
   end
   
   post '/ultragrid/gui/check' do
-    #content_type :html
+    content_type :html
     settings.ultragrid.check(params)
-    #redirect '/ultragrid/gui'
+    redirect '/ultragrid/gui'
   end
+  
+  
 #
 #  get '/app/stats' do
 #    content_type :html

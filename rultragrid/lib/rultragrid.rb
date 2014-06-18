@@ -34,70 +34,75 @@ module RUltraGrid
   end
 
   class UltraGrid
-    
-    # remote control params
-    # local ultragrid host address
-    attr_reader :host
-    # local ultragrid port address
-    attr_reader :port
-    
-    # ultragrid params
-    # original ultragrid fps
-    attr_reader :o_fps
-    # original ultragrid bitrate
-    attr_reader :o_br
-    # original ultragrid size
-    attr_reader :o_size
-    # current ultragrid fps
-    attr_reader :c_fps
-    # current ultragrid bitrate
-    attr_reader :c_br
-    # current ultragrid size
-    attr_reader :c_size
-    # current ultragrid losses
-    attr_reader :c_losses
-    
-    
+
+    @@uvgui_state = {:have_uv => false, 
+      :uv_running => false, :uv_params => "",   #TODO data persistent with mongodb (if reinit interface re-check if uv exists and uv running params...) 
+      :host => "127.0.0.1", :port => 5054, 
+      :o_fps => 0, :o_br => 0, :o_size => "0x0", 
+      :c_fps => 0, :c_br => 0, :c_size => "0x0", 
+      :losses => 0}
+
     def initialize(host, port)
       #configure network interface buffer size
       puts "Please, if required, enter administrator password in order to configure network buffer for UltraGrid"
+      
       output = system('sudo sysctl -w net.core.rmem_max=9123840')
-      puts "Network coinfiguration: DONE!" if output == true 
+      
+      puts "Network coinfiguration: DONE!" if output == true
       puts "Network coinfiguration: FAILED!"  if output == false
-
-      @host = host
-      @port = port
+      
+      @@uvgui_state[:have_uv] = check_ug
+      @@uvgui_state[:host] = host
+      @@uvgui_state[:port] = port
     end
-   
-     
-#    
-#ULTRAGRID SYSTEM WORKFLOWS
-#    
-    #internals
+
+    #
+    #ULTRAGRID SYSTEM WORKFLOWS
+    #
+    def have_uv
+      @@uvgui_state[:have_uv]
+    end
     
+    def get_curr_state
+      #JSON.generate(uvgui_state)
+      return @@uvgui_state
+    end
+    
+    def set_curr_state(state)
+      state_hash = JSON.parse(state)
+      state_hash.each do |key, value|
+        @@uvgui_state[key] = value
+      end
+      #      @uvgui_state[:host] = @state[:host] if @state[:host]
+      #      @uvgui_state[:port] = @state[:port] if @state[:port]
+      #      @uvgui_state[:o_fps] = @state[:o_fps] if @state[:o_fps]
+      #      @uvgui_state[:o_br] = @state[:o_br] if @state[:o_br]
+      #      @uvgui_state[:o_size] = @state[:o_size] if @state[:o_size]
+      #      @uvgui_state[:c_fps] = @state[:c_fps] if @state[:c_fps]
+      #      @uvgui_state[:c_br] = @state[:c_br] if @state[:c_br]
+      #      @uvgui_state[:c_size] = @state[:c_size] if @state[:c_size]
+      #      @uvgui_state[:losses] = @state[:losses] if @state[:losses]
+    end
+    
+    #main methods (check uv, local capture, remote connectivity and set start/stop uv)
     def check_ug
       !(find_executable 'uv').nil?
     end
-    
+
     def local_check
-      puts "GOT LOCAL CHECK MODE\n"
-      begin 
+      begin
         response = send_and_wait("compress param bitrate=1m\n")
       rescue JSON::ParserError, Errno::ECONNREFUSED => e
         puts "SOCKET ERROR: #{e.message}"
       end
-      puts "RESPONSE--->"
-      puts response
+      puts "RESPONSE---> #{response}"
     end
-    
+
     def remote_check
       puts "GOT REMOTE CHECK MODE\n"
 
     end
-    
-    
-    #from-to REST
-    
+
     def check(input)
       if input[:mode].eql?"local"
         local_check
@@ -107,7 +112,7 @@ module RUltraGrid
       end
     end
 
-    #!!!!!!!testing cmd run
+    #!!!!!!!testing cmds
     def run_ug
       cmd = 'uv -t v4l2 -c libavcodec:codec=H.264 -d sdl'
       @parser = Sexpistol.new
@@ -131,8 +136,8 @@ module RUltraGrid
             parsed = @parser.parse_string(output)
             puts "--> #{parsed[0]}"
             puts "GOT V4L2" if parsed[0].to_s.eql?"[V4L2"
-#            puts "parsed[0][1]\n\n"
-#            puts "output\n\n"
+            #            puts "parsed[0][1]\n\n"
+            #            puts "output\n\n"
           rescue IO::WaitReadable
             # A read would block, so loop around for another select
           rescue EOFError
@@ -147,11 +152,11 @@ module RUltraGrid
           # We need to kill the process, because killing the thread leaves
           # the process alive but detached, annoyingly enough.
           Process.kill("TERM", pid)
-          
+
           stdin.close if stdin
           stdout_err.close if stdout_err
         end
-        
+
         exit_status = wait_thr.value
         if exit_status.success?
           puts "WORKED !!! #{cmd}"
@@ -161,35 +166,33 @@ module RUltraGrid
 
       end
     end
-    
-    def testing_method_check(cmd)
-         #cmd = cmd.to_s
-         Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-           #           while line = stdout_err.gets
-            #             puts line
-           #           end
-           pid = thread[:pid]
-           start = Time.now
-           
-           exit_status = wait_thr.value
-           unless exit_status.success?
-             puts "FAILED !!! #{cmd}"
-           end
-   
-         end
-       end
-    
-#END ULTRAGRID SYSTEM WORKFLOWS
 
+    def testing_method_check(cmd)
+      #cmd = cmd.to_s
+      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+        #           while line = stdout_err.gets
+        #             puts line
+        #           end
+        pid = thread[:pid]
+        start = Time.now
+
+        exit_status = wait_thr.value
+        unless exit_status.success?
+          puts "FAILED !!! #{cmd}"
+        end
+
+      end
+    end
+    #END ULTRAGRID SYSTEM WORKFLOWS
     
-    
-    
-#TCP SOCKET MESSAGING TO ULTRAGRID
+    #
+    #TCP SOCKET MESSAGING TO ULTRAGRID
+    #
     def send_and_wait(cmd)
       #request = cmd.to_s
       request = cmd.to_s
       puts request
-      s = TCPSocket.open(@host, @port)
+      s = TCPSocket.open(@@uvgui_state[:host], @@uvgui_state[:port])
       s.print(request)
       response = s.recv(2048) # TODO: max_len ?
       s.close
@@ -198,13 +201,13 @@ module RUltraGrid
 
     def dont_wait(cmd)
       request = cmd
-      s = TCPSocket.open(@host, @port)
+      s = TCPSocket.open(@@uvgui_state[:host], @@uvgui_state[:port])
       s.print(request)
       s.close
       response = "ok"
       return response
     end
-    #END TCP SOCKET MESSAGING 
+    #END TCP SOCKET MESSAGING
 
   end
 
