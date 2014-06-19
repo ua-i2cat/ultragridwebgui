@@ -33,7 +33,7 @@ class UltraGridAPI < Sinatra::Base
   set :ip, '127.0.0.1'
   set :port, 5054
   set :ultragrid, RUltraGrid::UltraGrid.new(settings.ip, settings.port)
-
+  
   def dashboard (id = 1)
     k2s =
     lambda do |h|
@@ -46,8 +46,13 @@ class UltraGridAPI < Sinatra::Base
     end
 
     if settings.ultragrid.have_uv
+      
+      #testing
       puts settings.ultragrid.get_curr_state
-            
+      #settings.ultragrid.run_uv('uv -t v4l2 -c libavcodec:codec=H.264 -d sdl')
+      #end testing
+      
+      
       #parse curr_state to liquid params (hash to vector)
       
       #return index
@@ -138,18 +143,48 @@ class UltraGridAPI < Sinatra::Base
     content_type :html
     dashboard
   end
-
-  get '/ultragrid/gui/stop' do
-      #stop ug process
-  end
   
   post '/ultragrid/gui/check' do
+    #check local config. or remote config.&connectivity 
     content_type :html
     settings.ultragrid.check(params)
     redirect '/ultragrid/gui'
   end
   
+  get '/ultragrid/gui/start' do
+    #start ug process and play stream
+    content_type :html
+    settings.ultragrid.run_uv
+    redirect '/ultragrid/gui'      
+  end  
   
+  get '/ultragrid/gui/stop' do
+    #stop ug process
+    content_type :html
+    settings.ultragrid.stop_uv
+    redirect '/ultragrid/gui'    
+  end  
+
+  get '/ultragrid/gui/play' do
+    #play ug streaming
+    content_type :html
+    settings.ultragrid.play_uv
+    redirect '/ultragrid/gui'    
+  end  
+  
+  get '/ultragrid/gui/pause' do
+    #pause ug streaming 
+    content_type :html
+    settings.ultragrid.pause_uv
+    redirect '/ultragrid/gui'    
+  end  
+  
+  get '/ultragrid/gui/ccontrol' do
+    #stop ug process
+    content_type :html
+    settings.ultragrid.set_cc_mode(params)
+    redirect '/ultragrid/gui'    
+  end  
 #
 #  get '/app/stats' do
 #    content_type :html

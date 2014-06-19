@@ -26,6 +26,7 @@ require 'open3'
 require 'sexpistol'
 require 'socket'
 require 'json'
+require 'thread'
 
 module RUltraGrid
   # Generic error to be thrown when an error is returned by the remote
@@ -35,22 +36,37 @@ module RUltraGrid
 
   class UltraGrid
 
-    @@uvgui_state = {:have_uv => false, 
-      :uv_running => false, :uv_params => "",   #TODO data persistent with mongodb (if reinit interface re-check if uv exists and uv running params...) 
-      :host => "127.0.0.1", :port => 5054, 
-      :o_fps => 0, :o_br => 0, :o_size => "0x0", 
-      :c_fps => 0, :c_br => 0, :c_size => "0x0", 
+    @@uvgui_state = {:have_uv => false,
+      :checked_local => false, :checked_remote => false,
+      :uv_running => false, :uv_params => "",   #TODO data persistent with mongodb (if reinit interface re-check if uv exists and uv running params...)
+      :uv_play => false, :uv_vbcc => false,
+      :host => "127.0.0.1", :port => 5054,
+      :o_fps => 0, :o_br => 0, :o_size => "0x0",
+      :c_fps => 0, :c_br => 0, :c_size => "0x0",
       :losses => 0}
+
+    at_exit {
+      #define method to join thread and exit properly
+      begin 
+        @@uv_thr.join   # Calling an instance method join
+        #dosomething
+      rescue SignalException => e
+        raise e
+      rescue Exception => e
+        puts "Exiting without no UltraGrid to join!"
+      end
+      puts "BYE BYE!"
+    }
 
     def initialize(host, port)
       #configure network interface buffer size
       puts "Please, if required, enter administrator password in order to configure network buffer for UltraGrid"
-      
+
       output = system('sudo sysctl -w net.core.rmem_max=9123840')
-      
+
       puts "Network coinfiguration: DONE!" if output == true
       puts "Network coinfiguration: FAILED!"  if output == false
-      
+
       @@uvgui_state[:have_uv] = check_ug
       @@uvgui_state[:host] = host
       @@uvgui_state[:port] = port
@@ -62,62 +78,154 @@ module RUltraGrid
     def have_uv
       @@uvgui_state[:have_uv]
     end
-    
+
     def get_curr_state
       #JSON.generate(uvgui_state)
       return @@uvgui_state
     end
-    
+
     def set_curr_state(state)
       state_hash = JSON.parse(state)
       state_hash.each do |key, value|
         @@uvgui_state[key] = value
       end
-      #      @uvgui_state[:host] = @state[:host] if @state[:host]
-      #      @uvgui_state[:port] = @state[:port] if @state[:port]
-      #      @uvgui_state[:o_fps] = @state[:o_fps] if @state[:o_fps]
-      #      @uvgui_state[:o_br] = @state[:o_br] if @state[:o_br]
-      #      @uvgui_state[:o_size] = @state[:o_size] if @state[:o_size]
-      #      @uvgui_state[:c_fps] = @state[:c_fps] if @state[:c_fps]
-      #      @uvgui_state[:c_br] = @state[:c_br] if @state[:c_br]
-      #      @uvgui_state[:c_size] = @state[:c_size] if @state[:c_size]
-      #      @uvgui_state[:losses] = @state[:losses] if @state[:losses]
     end
-    
-    #main methods (check uv, local capture, remote connectivity and set start/stop uv)
+
     def check_ug
       !(find_executable 'uv').nil?
     end
 
-    def local_check
-      begin
-        response = send_and_wait("compress param bitrate=1m\n")
-      rescue JSON::ParserError, Errno::ECONNREFUSED => e
-        puts "SOCKET ERROR: #{e.message}"
-      end
-      puts "RESPONSE---> #{response}"
-    end
-
-    def remote_check
-      puts "GOT REMOTE CHECK MODE\n"
-
-    end
-
     def check(input)
       if input[:mode].eql?"local"
-        local_check
+        local_check(input[:cmd])
       end
       if input[:mode].eql?"remote"
-        remote_check
+        remote_check(input[:cmd])
+      end
+    end
+    
+    def local_check(cmd)
+      puts "GOT LOCAL CHECK MODE\n"
+      @@uvgui_state[:checked_local] = false
+      unless cmd.nil?
+        puts "got cmd to execute local test!"
+        @@uvgui_state[:checked_local] = uv_test(cmd)
       end
     end
 
-    #!!!!!!!testing cmds
-    def run_ug
-      cmd = 'uv -t v4l2 -c libavcodec:codec=H.264 -d sdl'
+    def remote_check(cmd)
+      puts "GOT REMOTE CHECK MODE\n"
+      @@uvgui_state[:checked_remote] = false
+      @@uvgui_state[:uv_params] = ""
+      unless cmd.nil?
+        puts "got cmd to execute remote connectivity test!"
+        @@uvgui_state[:checked_remote] = uv_test(cmd)
+        @@uvgui_state[:uv_params] = cmd
+      end
+    end
+  
+    def run_uv
+      @@uvgui_state[:uv_running] = false
+      cmd = @@uvgui_state[:uv_params]
+      #run thread uv (parsing std and updating uvgui_state)
+      if @@uvgui_state[:checked_remote] && @@uvgui_state[:checked_local]
+        @@uv_thr = Thread.new do   # Calling a class method new
+          begin
+            @parser = Sexpistol.new
+            @parser.scheme_compatability = true
+            puts "Starting UltraGrid"
+            Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+              while line = stdout_err.gets
+                puts line
+              end
+              exit_status = wait_thr.value
+              if exit_status.success?
+                puts "WORKED !!! #{cmd}"
+              else
+                puts "FAILED !!! #{cmd}"
+              end
+            end
+          rescue SignalException => e
+            raise e
+          rescue Exception => e
+            puts "No succes on running UltraGrid...!"
+            @@uvgui_state[:uv_running] = false
+            @@uvgui_state[:uv_play] = false
+          end
+          @@uvgui_state[:uv_running] = false
+          @@uvgui_state[:uv_play] = false
+        end
+        @@uvgui_state[:uv_running] = true
+        @@uvgui_state[:uv_play] = true
+      end
+     # @@uvgui_state[:uv_running] = false
+    end
+    
+    def stop_uv
+      begin
+        puts "Stopping UltraGrid"
+        Thread.kill(@@uv_thr)
+      rescue SignalException => e
+        raise e
+      rescue Exception => e
+        puts "No succes on exiting UltraGrid...!"
+      end
+      @@uvgui_state[:uv_running] = false
+    end
+    
+    def play_uv
+      @@uvgui_state[:uv_play] = false
+      if @@uvgui_state[:uv_running]
+        response = send_and_wait("play\n")
+        if response.nil?
+          @@uvgui_state[:uv_play] = false
+        else
+          @@uvgui_state[:uv_play] = true
+        end
+      end
+    end
+      
+    def pause_uv
+      @@uvgui_state[:uv_play] = false
+      if @@uvgui_state[:uv_running]
+        send_and_wait("pause\n")
+        @@uvgui_state[:uv_play] = false
+      end
+    end
+    
+    def set_cc_mode(input)
+      if input[:mode].eql?"auto" && !@@uvgui_state[:uv_vbcc]
+        #activate vbcc
+        response = send_and_wait("capture.filter vbcc\n")
+        if response.nil?
+          @@uvgui_state[:uv_vbcc] = false
+        else
+          puts "VBCC ACTIVE"
+          @@uvgui_state[:uv_vbcc] = true
+        end
+      end
+      if input[:mode].eql?"manual" && @@uvgui_state[:uv_vbcc]
+        #deactivate vbcc
+        #TODO do a global flush and reinit previous filters!!!
+        send_and_wait("capture.filter flush\n")
+        puts "VBCC DISABLED"
+        @@uvgui_state[:uv_vbcc] = false
+      end
+    end
+    #def set_anyparam_rc
+    #  begin
+    #    response = send_and_wait("compress param bitrate=1m\n")
+    #  rescue JSON::ParserError, Errno::ECONNREFUSED => e
+    #    puts "SOCKET ERROR: #{e.message}"
+    #  end
+    #  puts "RESPONSE---> #{response}"
+    
+    def uv_test(cmd)
+      #cmd = 'uv -t v4l2 -c libavcodec:codec=H.264 -d sdl'
       @parser = Sexpistol.new
       @parser.scheme_compatability = true
       error = false
+      test_duration = 5 #seconds
 
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
         #while line = stdout_err.gets
@@ -126,9 +234,9 @@ module RUltraGrid
         pid = wait_thr[:pid]
         start = Time.now
 
-        while (Time.now - start) < 10 and wait_thr.alive?
+        while (Time.now - start) < test_duration and wait_thr.alive?
           # Wait up to `tick` seconds for output/error data
-          Kernel.select([stdout_err], nil, nil, 10)
+          Kernel.select([stdout_err], nil, nil, test_duration)
           # Try to read the data
           begin
             puts "\nSTDOUTERR: "
@@ -160,13 +268,17 @@ module RUltraGrid
         exit_status = wait_thr.value
         if exit_status.success?
           puts "WORKED !!! #{cmd}"
+          return true
         else
           puts "FAILED !!! #{cmd}"
+          return false
         end
 
       end
     end
-
+    
+    
+    #!!!!!!!testing cmds
     def testing_method_check(cmd)
       #cmd = cmd.to_s
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
@@ -184,6 +296,8 @@ module RUltraGrid
       end
     end
     #END ULTRAGRID SYSTEM WORKFLOWS
+
+    
     
     #
     #TCP SOCKET MESSAGING TO ULTRAGRID
