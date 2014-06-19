@@ -47,86 +47,20 @@ class UltraGridAPI < Sinatra::Base
 
     if settings.ultragrid.have_uv
       
-      #testing
+      #testing/debugging
       puts settings.ultragrid.get_curr_state
       #settings.ultragrid.run_uv('uv -t v4l2 -c libavcodec:codec=H.264 -d sdl')
       #end testing
-      
-      
-      #parse curr_state to liquid params (hash to vector)
-      
+            
       #return index
-      liquid :index
-#      
-#      #Input streams json parsing
-#      i_streams = settings.ultragrid.input_streams
-#      input_streams = []
-#      
-#      i_streams.each do |s|
-#        crops = []
-#        s[:crops].each do |c|
-#          crops << k2s[c]
-#        end
-#        s[:crops] = crops
-#        input_streams << k2s[s]
-#      end
-#
-#      #Output stream json parsing
-#      o_stream = settings.ultragrid.output_stream
-#      output_stream = []
-#      o_crops = []
-#
-#      o_stream[:crops].each do |c|
-#        dst = []
-#        c[:destinations].each do |d|
-#          dst << k2s[d]
-#        end
-#        c[:destinations] = dst
-#        o_crops << k2s[c]
-#      end
-#
-#      o_stream[:crops] = o_crops
-#      output_stream << k2s[o_stream]
-#
-#      #Stats json parsing
-#      hash_stats = settings.ultragrid.get_stats
-#      i_stats, o_stats = [], []
-#
-#    if hash_stats[:input_streams] != nil
-#      hash_stats[:input_streams].each do |s|
-#        i_stats << k2s[s]
-#      end
-#      hash_stats[:input_streams] = i_stats
-#    end
-#      
-#    if hash_stats[:output_streams] != nil
-#      hash_stats[:output_streams].each do |s|
-#        o_stats << k2s[s]
-#      end
-#      hash_stats[:output_streams] = o_stats
-#    end
-#
-#      if (id == 2)
-#        liquid :commute, :locals => {
-#          "input_streams" => input_streams,
-#          "fade_time" =>settings.fade_time
-#        }
-#      elsif (id == 3)
-#        liquid :stats, :locals => {
-#          "input_stats" => i_stats,
-#          "output_stats" => o_stats
-#        }
-#      else
-#        liquid :index, :locals => {
-#          "input_streams" => input_streams,
-#          "output_streams" => output_stream,
-#          "grid" => settings.grid,
-#          "output_grid" => settings.output_grid
-#        }
-#      end
+      liquid :index, :locals => {
+        "state" => k2s[settings.ultragrid.get_curr_state]
+      }
+        
     else
       liquid :before
     end
+    
   end
 
   # Web App Methods
@@ -179,10 +113,17 @@ class UltraGridAPI < Sinatra::Base
     redirect '/ultragrid/gui'    
   end  
   
-  get '/ultragrid/gui/ccontrol' do
+  post '/ultragrid/gui/ccontrol' do
     #stop ug process
     content_type :html
     settings.ultragrid.set_cc_mode(params)
+    redirect '/ultragrid/gui'    
+  end  
+  
+  get '/ultragrid/gui/statistics' do
+    #pause ug streaming 
+    content_type :html
+    settings.ultragrid.pause_uv
     redirect '/ultragrid/gui'    
   end  
 #

@@ -40,7 +40,11 @@
 					style="margin-right: 50px; margin-top: -90px;">Stop</button>
 			</form>
 		</div>
-
+		{% if state.have_uv %}
+		OLA K ASE!!!!!
+		<br><br>
+		{% endif %}
+		
 		<!--  interface -->
 		<div class="row" style="margin-left: 0px; margin-bottom: -20px;">
 			<!--  source select -->
@@ -371,8 +375,8 @@
 	<script src="/bs/assets/js/jquery.js"></script>
 	<script src="/bs/dist/js/bootstrap.min.js"></script>
 	<script src="/bs/assets/js/holder.js"></script>
-	<script src="/js/app.js"></script>
-	<script type="text/javascript">
+<!-- 	<script src="/js/app.js"></script>
+ -->	<script type="text/javascript">
 		function set_grid(id) {
 			// $.post("/app/grid", { id: id });
 			$.ajax({

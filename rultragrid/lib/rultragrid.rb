@@ -47,7 +47,7 @@ module RUltraGrid
 
     at_exit {
       #define method to join thread and exit properly
-      begin 
+      begin
         @@uv_thr.join   # Calling an instance method join
         #dosomething
       rescue SignalException => e
@@ -103,7 +103,7 @@ module RUltraGrid
         remote_check(input[:cmd])
       end
     end
-    
+
     def local_check(cmd)
       puts "GOT LOCAL CHECK MODE\n"
       @@uvgui_state[:checked_local] = false
@@ -123,7 +123,7 @@ module RUltraGrid
         @@uvgui_state[:uv_params] = cmd
       end
     end
-  
+
     def run_uv
       @@uvgui_state[:uv_running] = false
       cmd = @@uvgui_state[:uv_params]
@@ -158,9 +158,9 @@ module RUltraGrid
         @@uvgui_state[:uv_running] = true
         @@uvgui_state[:uv_play] = true
       end
-     # @@uvgui_state[:uv_running] = false
+      # @@uvgui_state[:uv_running] = false
     end
-    
+
     def stop_uv
       begin
         puts "Stopping UltraGrid"
@@ -172,7 +172,7 @@ module RUltraGrid
       end
       @@uvgui_state[:uv_running] = false
     end
-    
+
     def play_uv
       @@uvgui_state[:uv_play] = false
       if @@uvgui_state[:uv_running]
@@ -184,7 +184,7 @@ module RUltraGrid
         end
       end
     end
-      
+
     def pause_uv
       @@uvgui_state[:uv_play] = false
       if @@uvgui_state[:uv_running]
@@ -192,9 +192,12 @@ module RUltraGrid
         @@uvgui_state[:uv_play] = false
       end
     end
-    
+
     def set_cc_mode(input)
-      if input[:mode].eql?"auto" && !@@uvgui_state[:uv_vbcc]
+      puts "\n"
+      puts !@@uvgui_state[:uv_vbcc] && input[:mode].eql?("auto")
+      puts "\n"
+      if !@@uvgui_state[:uv_vbcc] && input[:mode].eql?("auto")
         #activate vbcc
         response = send_and_wait("capture.filter vbcc\n")
         if response.nil?
@@ -204,7 +207,7 @@ module RUltraGrid
           @@uvgui_state[:uv_vbcc] = true
         end
       end
-      if input[:mode].eql?"manual" && @@uvgui_state[:uv_vbcc]
+      if @@uvgui_state[:uv_vbcc] && input[:mode].eql?("manual")
         #deactivate vbcc
         #TODO do a global flush and reinit previous filters!!!
         send_and_wait("capture.filter flush\n")
@@ -219,7 +222,7 @@ module RUltraGrid
     #    puts "SOCKET ERROR: #{e.message}"
     #  end
     #  puts "RESPONSE---> #{response}"
-    
+
     def uv_test(cmd)
       #cmd = 'uv -t v4l2 -c libavcodec:codec=H.264 -d sdl'
       @parser = Sexpistol.new
@@ -276,8 +279,7 @@ module RUltraGrid
 
       end
     end
-    
-    
+
     #!!!!!!!testing cmds
     def testing_method_check(cmd)
       #cmd = cmd.to_s
@@ -297,8 +299,6 @@ module RUltraGrid
     end
     #END ULTRAGRID SYSTEM WORKFLOWS
 
-    
-    
     #
     #TCP SOCKET MESSAGING TO ULTRAGRID
     #
