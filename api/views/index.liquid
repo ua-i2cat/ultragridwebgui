@@ -5,18 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="shortcut icon"
-	href="http://www.i2cat.net/sites/default/files/favicon.ico">
+<link rel="shortcut icon" href="http://www.i2cat.net/sites/default/files/favicon.ico">
+<script src="js/modernizr.custom.63321.js"></script>
 
 <title>UltraGrid GUI</title>
 
 <!-- Bootstrap core CSS -->
-<link href="/bs/dist/css/bootstrap.css" rel="stylesheet">
+<link href="bs/dist/css/bootstrap.css" rel="stylesheet">
 <!-- Bootstrap theme -->
-<link href="/bs/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="bs/dist/css/bootstrap-theme.min.css" rel="stylesheet">
 
 <!-- Custom styles for this template -->
-<link href="/theme.css" rel="stylesheet">
+<link href="css/theme.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/dropdown.css">
 
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
@@ -34,128 +35,163 @@
 			<h1 style="margin-left: 70px; padding-top: 20px;">
 				UltraGrid GUI <small>Front-End Interface</small>
 			</h1>
-			<form class="navbar-form navbar-right" action="/app/stop"
+			
+			<form class="navbar-form navbar-right" action="/ultragrid/gui/pause"
 				method="post">
 				<button type="submit" class="btn btn-danger btn-sm"
-					style="margin-right: 50px; margin-top: -90px;">Stop</button>
+					style="margin-right: 10px; margin-top: -90px;">Pause</button>
+			</form>
+
+			<form class="navbar-form navbar-right" action="/ultragrid/gui/stop"
+				method="post">
+				<button type="submit" class="btn btn-danger btn-sm"
+					style="margin-right: 10px; margin-top: -90px;">Stop</button>
+			</form>
+			
+			<form class="navbar-form navbar-right" action="/ultragrid/gui/reset"
+				method="post">
+				<button type="submit" class="btn btn-danger btn-sm"
+					style="margin-right: 10px; margin-top: -90px;">Reset</button>
 			</form>
 		</div>
-		{% if state.have_uv %}
-		OLA K ASE!!!!!
-		<br><br>
-		{% endif %}
+		
+		<!-- {:have_uv=>true, :checked_local=>false, :checked_remote=>false, 
+		:uv_running=>false, :got_params=>false, :uv_params=>"", :uv_play=>false, :uv_vbcc=>false, 
+		:host=>"127.0.0.1", :port=>5054, :o_fps=>0, :o_br=>0, :o_size=>"0x0", 
+		:c_fps=>0, :c_br=>0, :c_size=>"0x0", :losses=>0} -->
 		
 		<!--  interface -->
 		<div class="row" style="margin-left: 0px; margin-bottom: -20px;">
 			<!--  source select -->
-			<div class="col-md-6">
+			<div class="col-md-8">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<div class="btn-group">
-							<button type="button" id="source"
-								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-								style="width: 80px;">
-								Select <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a id="source_video" href="#">Video</a></li>
-								<li><a id="source_audio" href="#">Audio</a></li>
-								<li><a id="both" href="#">Both</a></li>
-							</ul>
-						</div>
+						
+						<span id="mediaType" class="label label-default"
+							style="margin-left: -5px; font-size: 14px;">Media type</span>
 						<span id="inputCol" class="label label-default"
-							style="margin-left: 60px; font-size: 14px;">Input</span> <span
-							id="modeCol" class="label label-default"
-							style="margin-left: 70px; font-size: 14px;">Mode</span> <span
-							id="fecCol" class="label label-default"
-							style="margin-left: 40px; font-size: 14px;">FEC</span>
+							style="margin-left: 45px; font-size: 14px;">Input</span> 
+						<span id="modeCol" class="label label-default"
+							style="margin-left: 50px; font-size: 14px;">Mode</span>
+						<span id="fecCol" class="label label-default"
+							style="margin-left: 60px; font-size: 14px;">FEC</span>
+						<span id="ipCol" class="label label-default"
+							style="margin-left: 68px; font-size: 14px;">destination IP</span>
+						<span id="txPortCol" class="label label-default"
+							style="margin-left: 38px; font-size: 14px;">Port</span>
+
 					</div>
 					<!-- VIDEO SOURCE CONFIG-->
 					<div class="panel-body" id="videoConfig">
-						<span class="label label-default"
-							style="margin-left: 10px; font-size: 14px;">Video</span>
-						<div class="btn-group" style="margin-left: 35px;">
-							<button type="button" id="videoInput"
-								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-								style="width: 120px;">
-								Input <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a id="videoInputDecklink" href="#">DeckLink</a></li>
-								<li><a id="videoInputTestcard" href="#">Testcard</a></li>
-							</ul>
-						</div>
-						<div class="btn-group" style="margin-left: 5px;">
-							<button type="button" id="videoInputMode"
-								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-								style="width: 120px;">
-								Mode <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a id="videoModeFullHDp" href="#">1080p 50</a></li>
-								<li><a id="videoModeHDp" href="#">720p 60</a></li>
-								<li><a id="videoModeFullHDi" href="#">1080i 25</a></li>
-							</ul>
-						</div>
-						<div class="btn-group" style="margin-left: 5px;">
-							<button type="button" id="videoInputFEC"
-								class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-								FEC <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu" style="width: 30px;">
-								<li><a id="videoFEC_ON" href="#">ON</a></li>
-								<li><a id="videoFEC_OFF" href="#">OFF</a></li>
-							</ul>
-						</div>
+							<form class="form-inline" role="form" style="margin-left:5px; margin-top:-5px;">
+								<span class="label label-default"
+									style="margin-left: 10px; font-size: 14px;">Video</span>
+								<div class="form-group" style="margin-left:30px;">
+									<div class="fleft">
+										<select id="cd-dropdown" class="cd-select">
+											<option value="-1" selected>Undefined</option>
+											<option value="1">DeckLink</option>
+											<option value="2">Testcard</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="fleft" style="margin-left:5px;">
+										<select id="cd-dropdown" class="cd-select">
+											<option value="-1" selected>Undefined</option>
+											<option value="1">1080p 50</option>
+											<option value="2">720p 60</option>
+											<option value="3">1080i 25</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group" style="margin-left:5px;">
+									<div class="fleft">
+										<select id="cd-dropdown" class="cd-select">
+											<option value="-1" selected>Undefined</option>
+											<option value="1">ON</option>
+											<option value="2">OFF</option>
+										</select>
+									</div>
+								</div>	
+							  <div class="form-group" style="margin-left:5px;">
+							    <label class="sr-only" for="inputVideoIP">IP</label>
+							    <input type="text" class="form-control" id="videoIP" style="text-align:center;" placeholder="127.0.0.1">
+							  </div>
+							  <div class="form-group" style="width:70px;">
+							    <label class="sr-only" for="inputVideoPort">Port</label>
+							    <input type="text" class="form-control" id="videoPort" style="text-align:center;" placeholder="5004">
+							  </div>
+							  <div class="checkbox" style="margin-left:10px;">
+							    <label>
+							      <input type="checkbox"> Enable video
+							    </label>
+							  </div>
+							</form>	
+
+
 					</div>
 					<!-- AUDIO SOURCE CONFIG-->
 					<div class="panel-body" id="audioConfig">
-						<span class="label label-default"
-							style="margin-left: 10px; font-size: 14px;">Audio</span>
-						<div class="btn-group" style="margin-left: 33px;">
-							<button type="button" id="audioInput"
-								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-								style="width: 120px;">
-								Input <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a id="audioInputSoundcard" href="#">Soundcard</a></li>
-								<li><a id="audioInputEmbedded" href="#">Embedded</a></li>
-								<li><a id="audioInputAnalog" href="#">Analog</a></li>
-							</ul>
-						</div>
-						<div class="btn-group" style="margin-left: 5px;">
-							<button type="button" id="audioInputMode"
-								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-								style="width: 120px;">
-								Mode <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a id="audioModeWBstereo" href="#">48kHz 16b stereo</a></li>
-								<li><a id="audioModeNBmono" href="#">8kHz 16b mono</a></li>
-							</ul>
-						</div>
-						<div class="btn-group" style="margin-left: 5px;">
-							<button type="button" id="audioInputFEC"
-								class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-								FEC <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a id="audioFEC_ON" href="#">ON</a></li>
-								<li><a id="audioFEC_OFF" href="#">OFF</a></li>
-							</ul>
-						</div>
+						<form class="form-inline" role="form" style="margin-left:5px; margin-top:-15px;">
+							<span class="label label-default"
+								style="margin-left: 10px; font-size: 14px;">Audio</span>
+								<div class="form-group" style="margin-left:30px;">
+									<div class="fleft">
+										<select id="cd-dropdown" class="cd-select">
+											<option value="-1" selected>Undefined</option>
+											<option value="1">Soundcard</option>
+											<option value="2">Embedded</option>
+											<option value="3">Analog</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="fleft" style="margin-left:5px;">
+										<select id="cd-dropdown" class="cd-select">
+											<option value="-1" selected>Undefined</option>
+											<option value="1">48kHz 2ch. (PCM)</option>
+											<option value="2">8kHz 1ch. (PCM)</option>
+											<option value="1">48kHz 2ch. (codec: OPUS)</option>
+											<option value="2">8kHz 1ch. (codec: OPUS)</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group" style="margin-left:5px;">
+									<div class="fleft">
+										<select id="cd-dropdown" class="cd-select">
+											<option value="-1" selected>Undefined</option>
+											<option value="1">ON</option>
+											<option value="2">OFF</option>
+										</select>
+									</div>
+								</div>
+
+							<div class="form-group" style="margin-left:5px;">
+							    <label class="sr-only" for="inputVideoIP">IP</label>
+							    <input type="text" class="form-control" id="videoIP" style="text-align:center;" placeholder="127.0.0.1">
+							  </div>
+							  <div class="form-group" style="width:70px;">
+							    <label class="sr-only" for="inputVideoPort">Port</label>
+							    <input type="text" class="form-control" id="videoPort" style="text-align:center;" placeholder="5006">
+							  </div>
+							  <div class="checkbox" style="margin-left:10px;">
+							    <label>
+							      <input type="checkbox"> Enable audio
+							    </label>
+							  </div>
+						</form>		
 					</div>
 				</div>
 
 			</div>
 			<!--  local check-->
-			<div class="col-md-2" id="localCheck" style="margin-left: -12px;">
+			<div class="col-md-2" id="localCheck" style="margin-left: -15px;">
 				<div class="panel panel-default" style="">
 					<div class="panel-heading">
 						<center>
 							<h5>
-								<b>Local Check</b>
+								<b>Local Config. Check</b>
 							</h5>
 						</center>
 					</div>
@@ -170,13 +206,14 @@
 					</div>
 				</div>
 			</div>
+
 			<!--  connectivity-->
 			<div class="col-md-2" id="connectivityCheck">
-				<div class="panel panel-default" style="margin-left: -10px;">
+				<div class="panel panel-default" style="margin-left: -20px;">
 					<div class="panel-heading">
 						<center>
 							<h5>
-								<b>Connectivity</b>
+								<b>Connectivity Check</b>
 							</h5>
 						</center>
 					</div>
@@ -191,30 +228,8 @@
 					</div>
 				</div>
 			</div>
-			<!--  transmission-->
-			<div class="col-md-2" id="transmissionSetter"
-				style="margin-right: 5px; margin-left: -10px;">
-				<div class="panel panel-default" style="">
-					<div class="panel-heading">
-						<center>
-							<h5>
-								<b>Transmission</b>
-							</h5>
-						</center>
-					</div>
-					<div class="panel-body">
-						<button id="transmissionSetterButton" type="button"
-							class="btn btn-default btn-lg" style="font-size: 14px;">
-							<span class="glyphicon glyphicon-stop"></span> Stop
-						</button>
-						<span id="transmissionSetterButtonSuccess"
-							class="glyphicon glyphicon-play"
-							style="font-size: 30px; top: 10px; left: 20px; color: blue;"></span>
-					</div>
-				</div>
-			</div>
 		</div>
-
+		
 		<hr noshade>
 
 		<!-- video -->
@@ -222,41 +237,40 @@
 			style="margin-left: 0px; margin-bottom: -20px;">
 			<div class="col-md-4" style="margin-right: 5px;">
 				<div class="panel panel-default" style="">
-					<div class="panel-heading">
+					<div class="panel-heading" style="text-align:center;">
 						<b>Video: </b>
 						<div class="btn-group" style="margin-left: 33px;">
-							<button type="button" class="btn btn-default dropdown-toggle"
-								data-toggle="dropdown">
-								Set control mode (default: manual)<span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a href="#">Manual</a></li>
-								<li><a href="#">Automatic</a></li>
-							</ul>
+						<div class="fleft">
+							<select id="cd-dropdown" class="cd-select">
+								<option value="-1" selected>Set control mode (default:manual)</option>
+								<option value="1">Manual</option>
+								<option value="2">Automatic</option>
+							</select>
+						</div>
 						</div>
 					</div>
-					<div class="panel-body" style="margin-top: -5px;">
+					<div class="panel-body">
 						<span class="label label-default col-lg-4"
 							style="margin-left: 30px; font-size: 14px;">Parameter</span> <span
 							class="label label-default col-lg-4"
 							style="margin-left: 30px; font-size: 14px;">Original Value</span>
 
 					</div>
-					<div class="panel-body" style="margin-top: -15px;">
+					<div class="panel-body" style="margin-top: -17px;">
 						<span class="label label-default col-lg-4"
 							style="margin-left: 30px; font-size: 14px;">Resolution</span> <span
 							class="label label-default col-lg-4"
 							style="margin-left: 30px; font-size: 14px;">1920 x 1080</span>&nbsppixels
 
 					</div>
-					<div class="panel-body" style="margin-top: -20px;">
+					<div class="panel-body" style="margin-top: -15px;">
 						<span class="label label-default col-lg-4"
 							style="margin-left: 30px; font-size: 14px;">Frame rate</span> <span
 							class="label label-default col-lg-4"
 							style="margin-left: 30px; font-size: 14px;">50</span> &nbspfps
 
 					</div>
-					<div class="panel-body" style="margin-top: -20px;">
+					<div class="panel-body" style="margin-top: -15px;">
 						<span class="label label-default col-lg-4"
 							style="margin-left: 30px; font-size: 14px;">Bit rate</span> <span
 							class="label label-default col-lg-4"
@@ -265,8 +279,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-4" style="margin-left: -15px;">
-				<div class="panel panel-default" style="">
+			<div class="col-md-3" style="margin-left: -15px;">
+				<div class="panel panel-default">
 					<div class="panel-heading">
 						<center>
 							<b>Manual control configuration </b>
@@ -280,10 +294,6 @@
 							<button type="button" class="btn btn-default active">1:2</button>
 							<button type="button" class="btn btn-default">1:4</button>
 						</div>
-						<button type="button" class="btn btn-default"
-							style="margin-left: 15px;">
-							<span class="glyphicon glyphicon-upload"></span> Apply
-						</button>
 					</div>
 					<div class="panel-body" style="margin-top: -15px;">
 						<span class="label label-default col-lg-4"
@@ -293,10 +303,6 @@
 							<button type="button" class="btn btn-default">1:2</button>
 							<button type="button" class="btn btn-default">1:4</button>
 						</div>
-						<button type="button" class="btn btn-default"
-							style="margin-left: 15px;">
-							<span class="glyphicon glyphicon-upload"></span> Apply
-						</button>
 					</div>
 					<div class="panel-body" style="margin-top: -15px;">
 						<span class="label label-default col-lg-4"
@@ -306,38 +312,52 @@
 							<button type="button" class="btn btn-default">1:2</button>
 							<button type="button" class="btn btn-default">1:4</button>
 						</div>
-						<button type="button" class="btn btn-default"
-							style="margin-left: 15px;">
-							<span class="glyphicon glyphicon-upload"></span> Apply
-						</button>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-4"
-				style="margin-left: -15px; margin-bottom: -80px; padding-bottom: -100px;">
-				<div class="panel panel-default">
+			<div class="col-md-5"
+				style="margin-left: -5px;">
+				<div class="panel panel-default;">
 					<div class="panel-heading">
 						<center>
 							<b>Current status </b>
 						</center>
 					</div>
-					<div class="panel-body">
-						<span class="label label-default col-lg-4"
-							style="margin-left: 20px; font-size: 14px;">Parameters</span> <span
-							class="label label-default col-lg-4"
-							style="margin-left: 70px; font-size: 14px;">Losses</span>
+					<div class="panel-body" style="height:168px;margin-top: -10px;">
+						<span class="label label-default col-lg-2"
+							style="margin-left: 45px; font-size: 14px;text-align: center;">Video</span>
+						<span class="label label-default col-lg-2"
+							style="margin-left: 65px; font-size: 14px;text-align: center;">Audio</span>
+						<span class="label label-default col-lg-2"
+							style="margin-left: 70px; font-size: 14px;text-align: center;">Losses</span>
 						<table class="table" style="margin-bottom: -11px;">
 							<tr>
-								<td style="padding-left: 30px;">960x540 pixels</td>
-								<td><span style="margin-left: -30px;">54 %</span></td>
+								<td style="text-align: center;">960x540 pixels
+									</td>
+								<td style="text-align: center;">48kHz
+									</td>
+								<td style="text-align: center;">
+									<span style="margin-top: 0px;">video: </span>
+									<span style="margin-left: 10px;">1 %</span>
+									<span class="glyphicon glyphicon-thumbs-up"
+										style="font-size: 20px; top: 5px; left: 15px; color: green;"></span>
+									</td>
 							</tr>
 							<tr>
-								<td style="padding-left: 50px;">49 fps</td>
-								<td><span class="glyphicon glyphicon-thumbs-down"
-									style="font-size: 20px; top: 0px; left: -25px; color: red;"></span></td>
+								<td style="text-align: center;">49 fps</td>
+								<td style="text-align: center;">stereo
+									</td>
+								<td style="text-align: center;">
+									<span style="margin-top: 0px;">audio: </span>
+									<span style="margin-left: 10px;">2 %</span>
+									<span class="glyphicon glyphicon-thumbs-up"
+										style="font-size: 20px; top: 5px; left: 15px; color: green;"></span>
+									</td>
 							</tr>
 							<tr>
-								<td style="padding-left: 40px;">4152 kbps</td>
+								<td style="text-align: center;">4152 kbps</td>
+								<td style="text-align: center;">96 kbps
+									</td>
 								<td></td>
 							</tr>
 						</table>
@@ -348,21 +368,19 @@
 
 		<hr noshade id="dividerAV">
 
-		<!-- audio -->
+		<!-- terminal feedback -->
 		<div class="row" id="audioParams" style="margin-left: 0px;">
-			<div class="col-md-4">
+			<div class="col-md-12" style="width:99%">
 				<div class="panel panel-default" style="">
-					<div class="panel-heading">
-						<b>Audio: current status</b>
+					<div class="panel-heading" style="text-align:center;">
+						<b>Real-time feedback</b>
 					</div>
 					<div class="panel-body">
-						<span class="label label-default col-lg-4"
-							style="font-size: 14px; left: 15px;">Losses</span> <span
-							class="label label-default col-lg-4"
-							style="font-size: 14px; left: 35px;">0%</span> <span
-							class="glyphicon glyphicon-thumbs-up"
-							style="font-size: 20px; top: 0px; left: 65px; color: green;"></span>
-
+					    <div class="form-control" id="feedback" style="height:100px;" placeholder="...waiting for feedback...">
+							<p> </p>
+							<p> </p>
+							<p>...waiting for feedback...</p>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -372,11 +390,17 @@
 	<!-- Bootstrap core JavaScript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="/bs/assets/js/jquery.js"></script>
-	<script src="/bs/dist/js/bootstrap.min.js"></script>
-	<script src="/bs/assets/js/holder.js"></script>
-<!-- 	<script src="/js/app.js"></script>
- -->	<script type="text/javascript">
+	<script src="bs/assets/js/jquery.js"></script>
+	<script type="text/javascript" src="js/jquery.dropdown.js"></script>
+	<script src="bs/dist/js/bootstrap.min.js"></script>
+	<script src="bs/assets/js/holder.js"></script>
+<!-- 	<script src="/js/app.js"></script> -->	
+	<script type="text/javascript">
+		$( function() {	
+			$( '#cd-dropdown' ).dropdown();
+		});
+	</script>
+	<script type="text/javascript">
 		function set_grid(id) {
 			// $.post("/app/grid", { id: id });
 			$.ajax({

@@ -30,3 +30,12 @@ h1,.h1 {
 	font-size: 36px;
 	color: darkgoldenrod;
 }
+
+.is-disabled {
+    opacity: .5;
+    pointer-events: none;
+}	
+.is-enabled {
+    opacity: 1;
+    pointer-events: all;
+}

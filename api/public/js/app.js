@@ -291,44 +291,45 @@ $('button[id^="transmissionSetterButton"]').click(function(e) {
 	transmission |= true;
 	globalListener();
 });
-
-
-//WEBSOCKET EVENTS
-//function onOpen(eventObject) {
-//	console.log("WS open");
-//}
-//function onMessage(eventObject) {
-//	console.log("WS message");
-//	newMessage = JSON.parse(eventObject.data);
-//	console.log(newMessage);
-//}
-//
-//function onClose(eventObject) {
-//	console.log("WS close");
-//	console.log(eventObject);
-//}
-//
-//function onError(eventObject) {
-//	console.log("WS error");
-//	console.log(eventObject);
-//}
-//
-//webSocket = new WebSocket("ws://" + window.location.host
-//		+ "/app");
-//webSocket.onopen = onOpen;
-//webSocket.onmessage = onMessage;
-//webSocket.onclose = onClose;
-//webSocket.onerror = onError;
-//
-//function sendCustomMessage(message) {
-//	if (webSocket != null) {
-//		webSocket.send(message);
-//	}
-//}
-//
-//function sendMessage() {
-//	if (webSocket != null) {
-//		var message = document.getElementById('message').value;
-//		webSocket.send(message);
-//	}
-//}
+	-
+	/*-
+	-//WEBSOCKET EVENTS
+	-//function onOpen(eventObject) {
+	-//	console.log("WS open");
+	-//}
+	-//function onMessage(eventObject) {
+	-//	console.log("WS message");
+	-//	newMessage = JSON.parse(eventObject.data);
+	-//	console.log(newMessage);
+	-//}
+	-//
+	-//function onClose(eventObject) {
+	-//	console.log("WS close");
+	-//	console.log(eventObject);
+	-//}
+	-//
+	-//function onError(eventObject) {
+	-//	console.log("WS error");
+	-//	console.log(eventObject);
+	-//}
+	-//
+	-//webSocket = new WebSocket("ws://" + window.location.host
+	-//		+ "/app");
+	-//webSocket.onopen = onOpen;
+	-//webSocket.onmessage = onMessage;
+	-//webSocket.onclose = onClose;
+	-//webSocket.onerror = onError;
+	-//
+	-//function sendCustomMessage(message) {
+	-//	if (webSocket != null) {
+	-//		webSocket.send(message);
+	-//	}
+	-//}
+	-//
+	-//function sendMessage() {
+	-//	if (webSocket != null) {
+	-//		var message = document.getElementById('message').value;
+	-//		webSocket.send(message);
+	-//	}
+	-//}
+	*/
