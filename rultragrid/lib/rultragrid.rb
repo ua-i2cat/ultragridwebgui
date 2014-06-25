@@ -60,10 +60,7 @@ module RUltraGrid
 
     def initialize(host, port)
       #configure network interface buffer size
-      puts "Please, if required, enter administrator password in order to configure network buffer for UltraGrid"
-
       output = system('sudo sysctl -w net.core.rmem_max=9123840')
-
       puts "Network coinfiguration: DONE!" if output == true
       puts "Network coinfiguration: FAILED!"  if output == false
 

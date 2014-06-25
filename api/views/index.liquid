@@ -38,19 +38,19 @@
 			
 			<form class="navbar-form navbar-right" action="/ultragrid/gui/pause"
 				method="post">
-				<button type="submit" class="btn btn-danger btn-sm"
+				<button id="play_button" type="submit" class="btn btn-danger btn-sm"
 					style="margin-right: 10px; margin-top: -90px;">Pause</button>
 			</form>
 
 			<form class="navbar-form navbar-right" action="/ultragrid/gui/stop"
 				method="post">
-				<button type="submit" class="btn btn-danger btn-sm"
+				<button id="stop_button" type="submit" class="btn btn-danger btn-sm"
 					style="margin-right: 10px; margin-top: -90px;">Stop</button>
 			</form>
 			
 			<form class="navbar-form navbar-right" action="/ultragrid/gui/reset"
 				method="post">
-				<button type="submit" class="btn btn-danger btn-sm"
+				<button id="reset_button" type="submit" class="btn btn-danger btn-sm"
 					style="margin-right: 10px; margin-top: -90px;">Reset</button>
 			</form>
 		</div>
@@ -88,43 +88,41 @@
 									style="margin-left: 20px; font-size: 14px;">Video</span>
 								<div class="form-group" style="margin-left:22px;">
 									<div class="fleft">
-										<select id="cd-dropdown" class="cd-select">
-											<option value="-1" selected>Undefined</option>
-											<option value="1">DeckLink</option>
-											<option value="2">Testcard</option>
+										<select id="cd-dropdown-video-input" class="cd-select">
+											<option value="-1" selected>undefined</option>
+											<option value="1">decklink</option>
+											<option value="2">testcard</option>
 										</select>
 									</div>
 								</div>
 								<div class="form-group">
 									<div class="fleft" style="margin-left:5px;">
-										<select id="cd-dropdown" class="cd-select">
-											<option value="-1" selected>Undefined</option>
-											<option value="1">1080p 50</option>
-											<option value="2">720p 60</option>
-											<option value="3">1080i 25</option>
+										<select id="cd-dropdown-video-mode" class="cd-select">
+											<option value="-1" selected>undefined</option>
+											<option value="1">1080i 50</option>
+											<option value="2">720p 50</option>
+											<option value="3">1080p 25</option>
 										</select>
 									</div>
 								</div>
 								<div class="form-group" style="margin-left:5px;">
 									<div class="fleft">
-										<select id="cd-dropdown" class="cd-select">
-											<option value="-1" selected>Undefined</option>
+										<select id="cd-dropdown-video-fec" class="cd-select">
+											<option value="-1" selected>undefined</option>
 											<option value="1">ON</option>
 											<option value="2">OFF</option>
 										</select>
 									</div>
 								</div>	
 							  <div class="form-group" style="margin-left:5px;">
-							    <label class="sr-only" for="inputVideoIP">IP</label>
 							    <input type="text" class="form-control" id="videoIP" style="text-align:center;" placeholder="127.0.0.1">
 							  </div>
 							  <div class="form-group" style="width:70px;">
-							    <label class="sr-only" for="inputVideoPort">Port</label>
 							    <input type="text" class="form-control" id="videoPort" style="text-align:center;" placeholder="5004">
 							  </div>
 							  <div class="checkbox" style="margin-left:10px;">
 							    <label>
-							      <input type="checkbox"> Enable video
+							      <input type="checkbox" id="enable_video"> Enable video
 							    </label>
 							  </div>
 							</form>	
@@ -138,18 +136,18 @@
 								style="margin-left: 20px; font-size: 14px;">Audio</span>
 								<div class="form-group" style="margin-left:20px;">
 									<div class="fleft">
-										<select id="cd-dropdown" class="cd-select">
-											<option value="-1" selected>Undefined</option>
-											<option value="1">Soundcard</option>
-											<option value="2">Embedded</option>
-											<option value="3">Analog</option>
+										<select id="cd-dropdown-audio-input" class="cd-select">
+											<option value="-1" selected>undefined</option>
+											<option value="1">alsa</option>
+											<option value="2">embedded</option>
+											<option value="3">analog</option>
 										</select>
 									</div>
 								</div>
 								<div class="form-group">
 									<div class="fleft" style="margin-left:5px;">
-										<select id="cd-dropdown" class="cd-select">
-											<option value="-1" selected>Undefined</option>
+										<select id="cd-dropdown-audio-mode" class="cd-select">
+											<option value="-1" selected>undefined</option>
 											<option value="1">48kHz 2ch. (PCM)</option>
 											<option value="2">8kHz 1ch. (PCM)</option>
 											<option value="1">48kHz 2ch. (codec: OPUS)</option>
@@ -159,8 +157,8 @@
 								</div>
 								<div class="form-group" style="margin-left:5px;">
 									<div class="fleft">
-										<select id="cd-dropdown" class="cd-select">
-											<option value="-1" selected>Undefined</option>
+										<select id="cd-dropdown-audio-fec" class="cd-select">
+											<option value="-1" selected>undefined</option>
 											<option value="1">ON</option>
 											<option value="2">OFF</option>
 										</select>
@@ -168,16 +166,14 @@
 								</div>
 
 							<div class="form-group" style="margin-left:5px;">
-							    <label class="sr-only" for="inputVideoIP">IP</label>
-							    <input type="text" class="form-control" id="videoIP" style="text-align:center;" placeholder="127.0.0.1">
+							    <input type="text" class="form-control" id="audioIP" style="text-align:center;" placeholder="127.0.0.1">
 							  </div>
 							  <div class="form-group" style="width:70px;">
-							    <label class="sr-only" for="inputVideoPort">Port</label>
-							    <input type="text" class="form-control" id="videoPort" style="text-align:center;" placeholder="5006">
+							    <input type="text" class="form-control" id="audioPort" style="text-align:center;" placeholder="5006">
 							  </div>
 							  <div class="checkbox" style="margin-left:10px;">
 							    <label>
-							      <input type="checkbox"> Enable audio
+							      <input type="checkbox" id="enable_audio"> Enable audio
 							    </label>
 							  </div>
 						</form>		
@@ -394,7 +390,7 @@
 	<script type="text/javascript" src="/js/jquery.dropdown.js"></script>
 	<script src="/bs/dist/js/bootstrap.min.js"></script>
 	<script src="/bs/assets/js/holder.js"></script>
-<!-- 	<script src="/js/app.js"></script> -->	
+	<script src="/js/app.js"></script>
 	<script type="text/javascript">
 		$( function() {	
 			$( '#cd-dropdown' ).dropdown();

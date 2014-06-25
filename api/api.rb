@@ -80,64 +80,51 @@ class UltraGridAPI < Sinatra::Base
   
   post '/ultragrid/gui/check' do
     #check local config. or remote config.&connectivity 
-    content_type :html
+    content_type :json
     settings.ultragrid.check(params)
-    redirect '/ultragrid/gui'
+    return settings.ultragrid.get_curr_state.to_json
   end
   
   get '/ultragrid/gui/start' do
     #start ug process and play stream
-    content_type :html
+    content_type :json
     settings.ultragrid.run_uv
-    redirect '/ultragrid/gui'      
+    return settings.ultragrid.get_curr_state.to_json
   end  
   
   get '/ultragrid/gui/stop' do
     #stop ug process
-    content_type :html
+    content_type :json
     settings.ultragrid.stop_uv
-    redirect '/ultragrid/gui'    
+    return settings.ultragrid.get_curr_state.to_json
   end  
 
   get '/ultragrid/gui/play' do
     #play ug streaming
-    content_type :html
+    content_type :json
     settings.ultragrid.play_uv
-    redirect '/ultragrid/gui'    
+    return settings.ultragrid.get_curr_state.to_json
   end  
   
   get '/ultragrid/gui/pause' do
     #pause ug streaming 
-    content_type :html
+    content_type :json
     settings.ultragrid.pause_uv
-    redirect '/ultragrid/gui'    
+    return settings.ultragrid.get_curr_state.to_json
   end  
   
   post '/ultragrid/gui/ccontrol' do
     #stop ug process
-    content_type :html
+    content_type :json
     settings.ultragrid.set_cc_mode(params)
-    redirect '/ultragrid/gui'    
+    return settings.ultragrid.get_curr_state.to_json
   end  
   
   get '/ultragrid/gui/statistics' do
     #pause ug streaming 
-    content_type :html
+    content_type :json
     settings.ultragrid.pause_uv
-    redirect '/ultragrid/gui'    
+    return settings.ultragrid.get_curr_state.to_json
   end  
-#
-#  get '/app/stats' do
-#    content_type :html
-#    dashboard(3)
-#  end
-#
-#  post '/app/start' do
-#    content_type :html
-#    error_html do
-#      settings.ultragrid.start(params)
-#    end
-#    redirect '/app'
-#  end
-#
+
   end
