@@ -15,6 +15,9 @@ $( function() {
 	var audioCMD = "";
 	var cmnd = "";
 	
+	/**
+	 * LOCAL CHECK
+	 */
 	$("#localCheckButton").click(
 		function() {
 			if(!$('#enable_video').is(':checked') && !$('#enable_audio').is(':checked')){
@@ -40,8 +43,6 @@ $( function() {
 			}
 			
 			process_config();
-			
-			console.log(videoIP);
 	});
 	
 	function create_video_cmd(){
@@ -68,13 +69,13 @@ $( function() {
 	
 	function process_config(){
 		if($('#enable_video').is(':checked') && $('#enable_audio').is(':checked')){
-			cmnd = "mode=local&cmd=uv "+videoCMD+" "+audioCMD+" "+videoIP+" -A "+audioIP+" -P"+videoPort+":"+videoPort+":"+audioPort+":"+audioPort;
+			cmnd = "uv "+videoCMD+" "+audioCMD+" "+videoIP+" -A "+audioIP+" -P"+videoPort+":"+videoPort+":"+audioPort+":"+audioPort;
 			console.log("AV COMMAND: "+cmnd);
 		} else if($('#enable_video').is(':checked') && !$('#enable_audio').is(':checked')){
-			cmnd = "mode=local&cmd=uv "+videoCMD+" "+videoIP+" -P"+videoPort;
+			cmnd = "uv "+videoCMD+" "+videoIP+" -P"+videoPort;
 			console.log("V COMMAND: "+cmnd);
 		} else if(!$('#enable_video').is(':checked') && $('#enable_audio').is(':checked')){
-			cmnd = "mode=local&cmd=uv "+audioCMD+" "+audioIP+" -P"+videoPort+":"+videoPort+":"+audioPort+":"+audioPort;
+			cmnd = "uv "+audioCMD+" "+audioIP+" -P"+videoPort+":"+videoPort+":"+audioPort+":"+audioPort;
 			console.log("A COMMAND: "+cmnd);
 		} else {
 			alert("ERROR: unable to set configuration. Please, check parameters.");
@@ -83,7 +84,7 @@ $( function() {
 		$.ajax({
 			type : 'POST',
 			url : "/ultragrid/gui/check",
-			data : cmnd,
+			data : "mode=local&cmd="+cmnd,
 			async : false,
 			success: function(msg){
 				console.log(msg);
@@ -214,5 +215,63 @@ $( function() {
 				break;
 		}
 	}
+	//END LOCAL CHECK
+	
+	/**
+	 * REMOTE CHECK
+	 */
+	$("#connectivityCheckButton").click(
+		function() {
+			$.ajax({
+				type : 'POST',
+				url : "/ultragrid/gui/check",
+				data : "mode=remote&cmd="+cmnd,
+				async : false,
+				success: function(msg){
+					console.log(msg);
+//						if(!msg){
+//							$("#loading").hide();
+//							$("#msg").show();
+//						}
+//						else if(msg.msg == "1"){
+//							location.href = "/AppServer/#/adminOverview";
+//							loginUser = msg.userId;
+//							loginOrg = msg.orgId;
+//							loginOrgName = msg.orgName;
+//							loginUserName = msg.userName;
+//						} 
+//						else if(msg.msg == "2") {
+//							location.href = "/AppServer/#/clientOverview/"+msg.orgId;
+//							loginUser = msg.userId;
+//							loginOrg = msg.orgId;
+//							loginOrgName = msg.orgName;
+//							loginUserName = msg.userName;
+//						} 
+				},
+				error: function(xhr, msg) { 
+					console.log(msg + '\n' + xhr.responseText);
+//						if(!xhr.responseText){
+//							$("#loading").hide();
+//							$("#msg").show();
+//						}
+//						else if(xhr.responseText.msg == "1"){
+//							location.href = "/AppServer/#/adminOverview";
+//							loginUser = xhr.responseText.userId;
+//							loginOrg = xhr.responseText.orgId;
+//							loginOrgName = xhr.responseText.orgName;
+//							loginUserName = xhr.responseText.userName;
+//						} 
+//						else if(xhr.responseText.msg == "2"){
+//							location.href = "/AppServer/#/clientOverview/"+xhr.responseText.orgId;
+//							loginUser = xhr.responseText.userId;
+//							loginOrg = xhr.responseText.orgId;
+//							loginOrgName = xhr.responseText.orgName;
+//							loginUserName = xhr.responseText.userName;
+//						} 
+				}
+			});
+	});
+	//END REMOTE CHECK
 
 });
+

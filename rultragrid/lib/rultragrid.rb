@@ -23,7 +23,6 @@
 require "rultragrid/version"
 require 'mkmf'
 require 'open3'
-require 'sexpistol'
 require 'socket'
 require 'json'
 require 'thread'
@@ -62,7 +61,7 @@ module RUltraGrid
       #configure network interface buffer size
       output = system('sudo sysctl -w net.core.rmem_max=9123840')
       puts "Network coinfiguration: DONE!" if output == true
-      puts "Network coinfiguration: FAILED!"  if output == false
+      puts "Network coinfiguration: FAILED!" if output == false
 
       @@uvgui_state[:have_uv] = check_ug
       @@uvgui_state[:host] = host
@@ -106,7 +105,7 @@ module RUltraGrid
       @@uvgui_state[:checked_local] = false
       unless cmd.nil?
         puts "got cmd to execute local test!"
-        @@uvgui_state[:checked_local] = uv_test(cmd)
+        @@uvgui_state[:checked_local] = uv_test_local(cmd)
       end
     end
 
@@ -116,7 +115,7 @@ module RUltraGrid
       @@uvgui_state[:uv_params] = ""
       unless cmd.nil?
         puts "got cmd to execute remote connectivity test!"
-        @@uvgui_state[:checked_remote] = uv_test(cmd)
+        @@uvgui_state[:checked_remote] = uv_test_remote(cmd)
         @@uvgui_state[:uv_params] = cmd
       end
     end
@@ -220,17 +219,14 @@ module RUltraGrid
     #  end
     #  puts "RESPONSE---> #{response}"
 
-    def uv_test(cmd)
-      #cmd = 'uv -t v4l2 -c libavcodec:codec=H.264 -d sdl'
-      @parser = Sexpistol.new
-      @parser.scheme_compatability = true
-      error = false
-      test_duration = 5 #seconds
+    def uv_test_local(cmd)
+      test_duration = 4 #seconds
+      puts cmd
 
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-        #while line = stdout_err.gets
-        # puts line
-        #end
+        video_error = true
+        audio_error = true
+
         pid = wait_thr[:pid]
         start = Time.now
 
@@ -239,13 +235,17 @@ module RUltraGrid
           Kernel.select([stdout_err], nil, nil, test_duration)
           # Try to read the data
           begin
-            puts "\nSTDOUTERR: "
             output = stdout_err.read_nonblock(4096)
-            parsed = @parser.parse_string(output)
-            puts "--> #{parsed[0]}"
-            puts "GOT V4L2" if parsed[0].to_s.eql?"[V4L2"
-            #            puts "parsed[0][1]\n\n"
-            #            puts "output\n\n"
+            if output.include?"OK!"
+              video_error = false
+            end
+            if output.include?"KO!"
+              video_error = true
+            end
+            if output.include?"OK!"
+              audio_error = false
+            end
+
           rescue IO::WaitReadable
             # A read would block, so loop around for another select
           rescue EOFError
@@ -265,15 +265,60 @@ module RUltraGrid
           stdout_err.close if stdout_err
         end
 
-        exit_status = wait_thr.value
-        if exit_status.success?
-          puts "WORKED !!! #{cmd}"
-          return true
-        else
-          puts "FAILED !!! #{cmd}"
-          return false
+        if cmd.include?" -t"
+          if cmd.include?" -s"
+            return !audio_error && !video_error
+          else
+            return !video_error
+          end
+        end
+        if cmd.include?"-s"
+          return !audio_error
+        end
+      end
+    end
+
+    def uv_test_remote(cmd)
+      test_duration = 5 #seconds
+      puts cmd
+
+      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+        rx_error = true
+
+        pid = wait_thr[:pid]
+        start = Time.now
+
+        while (Time.now - start) < test_duration and wait_thr.alive?
+          # Wait up to `tick` seconds for output/error data
+          Kernel.select([stdout_err], nil, nil, test_duration)
+          # Try to read the data
+          begin
+            output = stdout_err.read_nonblock(4096)
+            if output.include?"[RX] OK!"
+              rx_error = false
+            end
+
+          rescue IO::WaitReadable
+            # A read would block, so loop around for another select
+          rescue EOFError
+            # Command has completed, not really an error...
+            break
+          end
+        end
+        # Give Ruby time to clean up the other thread
+        sleep 1
+
+        if wait_thr.alive?
+          # We need to kill the process, because killing the thread leaves
+          # the process alive but detached, annoyingly enough.
+          Process.kill("TERM", pid)
+
+          stdin.close if stdin
+          stdout_err.close if stdout_err
         end
 
+        return !rx_error
+        
       end
     end
 
@@ -323,3 +368,4 @@ module RUltraGrid
   end
 
 end
+
