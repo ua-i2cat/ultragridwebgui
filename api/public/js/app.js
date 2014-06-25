@@ -48,8 +48,8 @@ $( function() {
 		if(videoInput == "undefined" || videoMode == "undefined" || videoFEC == "undefined"){
 			alert("Undefined parameters are not allowed");
 		}
-		if(!$('#videoIP').val() === '') videoIP = $('#videoIP').val();
-		if(!$('#videoPort').val() === '') videoPort = $('#videoPort').val();
+		if(!$('#videoIP').val() == '') videoIP = $('#videoIP').val();
+		if(!$('#videoPort').val() == '') videoPort = $('#videoPort').val();
 		
 		videoCMD = "-t "+videoInput+":"+videoMode+" "+videoFEC;	
 		console.log(videoCMD);
