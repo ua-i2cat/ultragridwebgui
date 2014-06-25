@@ -368,3 +368,4 @@ module RUltraGrid
   end
 
 end
+
