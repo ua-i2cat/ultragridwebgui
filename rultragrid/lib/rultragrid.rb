@@ -244,6 +244,8 @@ module RUltraGrid
             end
             if output.include?"OK!"
               audio_error = false
+            else
+              audio_error = true
             end
 
           rescue IO::WaitReadable
