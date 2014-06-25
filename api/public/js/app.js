@@ -217,6 +217,8 @@ $( function() {
 	}
 	//END LOCAL CHECK
 	
+	
+	
 	/**
 	 * REMOTE CHECK
 	 */
