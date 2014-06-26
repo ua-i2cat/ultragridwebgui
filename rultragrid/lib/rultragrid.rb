@@ -39,7 +39,7 @@ module RUltraGrid
       :checked_local => false, :checked_remote => false,
       :uv_running => false, :uv_params => "",   #TODO data persistent with mongodb (if reinit interface re-check if uv exists and uv running params...)
       :uv_play => false, :uv_vbcc => false,
-      :host => "127.0.0.1", :port => 5054,
+      :host => "127.0.0.1", :port => 8054,
       :o_fps => 0, :o_br => 0, :o_size => "0x0",
       :c_fps => 0, :c_br => 0, :c_size => "0x0",
       :losses => 0}
@@ -61,7 +61,7 @@ module RUltraGrid
       stop_uv
       @@uvgui_state[:have_uv] = check_ug
       @@uvgui_state[:host] = "127.0.0.1"
-      @@uvgui_state[:port] = 5054
+      @@uvgui_state[:port] = 8054
       @@uvgui_state[:checked_local] = false
       @@uvgui_state[:checked_remote] = false
       @@uvgui_state[:uv_running] = false

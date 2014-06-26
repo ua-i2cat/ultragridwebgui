@@ -5,13 +5,15 @@ $( function() {
 	var videoMode;
 	var videoFEC;
 	var videoIP = "127.0.0.1";
-	var videoPort = "5004";
+	var videoRxPort = "5004";
+	var videoTxPort = "5004";
 	var videoCMD = "";
 	var audioInput;
 	var audioMode;
 	var audioFEC;
 	var audioIP = "127.0.0.1";
-	var audioPort = "5006";
+	var audioRxPort = "5006";
+	var audioTxPort = "5006";
 	var audioCMD = "";
 	var cmnd = "";
 
@@ -69,9 +71,10 @@ $( function() {
 			alert("Undefined parameters are not allowed");
 		}
 		if(!$('#videoIP').val() == '') videoIP = $('#videoIP').val();
-		if(!$('#videoPort').val() == '') videoPort = $('#videoPort').val();
+		if(!$('#videoRxPort').val() == '') videoRxPort = $('#videoRxPort').val();
+		if(!$('#videoTxPort').val() == '') videoTxPort = $('#videoTxPort').val();
 		
-		videoCMD = "-t "+videoInput+":"+videoMode+" "+videoFEC;	
+		videoCMD = "-t "+videoInput+""+videoMode+" "+videoFEC;	
 		console.log(videoCMD);
 
 	}
@@ -80,7 +83,8 @@ $( function() {
 			alert("Undefined parameters are not allowed");
 		}
 		if(!$('#audioIP').val() == '') audioIP = $('#audioIP').val();
-		if(!$('#audioPort').val() == '') audioPort = $('#audioPort').val();
+		if(!$('#audioRxPort').val() == '') audioRxPort = $('#audioRxPort').val();
+		if(!$('#audioTxPort').val() == '') audioTxPort = $('#audioTxPort').val();
 		
 		audioCMD = "-s "+audioInput+" "+audioMode+" "+audioFEC;	
 		console.log(audioCMD);
@@ -88,13 +92,13 @@ $( function() {
 	
 	function process_config(){
 		if($('#enable_video').is(':checked') && $('#enable_audio').is(':checked')){
-			cmnd = "uv "+videoCMD+" "+audioCMD+" "+videoIP+" -A "+audioIP+" -P"+videoPort+":"+videoPort+":"+audioPort+":"+audioPort;
+			cmnd = "uv --control-port 8054 "+videoCMD+" "+audioCMD+" "+videoIP+" -A "+audioIP+" -P"+videoRxPort+":"+videoTxPort+":"+audioRxPort+":"+audioTxPort;
 			console.log("AV COMMAND: "+cmnd);
 		} else if($('#enable_video').is(':checked') && !$('#enable_audio').is(':checked')){
-			cmnd = "uv "+videoCMD+" "+videoIP+" -P"+videoPort;
+			cmnd = "uv --control-port 8054 "+videoCMD+" "+videoIP+" -P"+videoRxPort+":"+videoTxPort;
 			console.log("V COMMAND: "+cmnd);
 		} else if(!$('#enable_video').is(':checked') && $('#enable_audio').is(':checked')){
-			cmnd = "uv "+audioCMD+" "+audioIP+" -P"+videoPort+":"+videoPort+":"+audioPort+":"+audioPort;
+			cmnd = "uv --control-port 8054 "+audioCMD+" "+audioIP+" -P"+videoRxPort+":"+videoTxPort+":"+audioRxPort+":"+audioTxPort;
 			console.log("A COMMAND: "+cmnd);
 		} else {
 			alert("ERROR: unable to set configuration. Please, check parameters.");
@@ -121,13 +125,13 @@ $( function() {
 		if(videoInput === 'decklink'){
 			switch($('#cd-dropdown-video-mode').find(":selected").text()){
 				case "1080i 50":
-					videoMode = "0:8 -c libavcodec:codec=H.264";
+					videoMode = ":0:8 -c libavcodec:codec=H.264";
 					break;
 				case "720p 50":
-					videoMode = "0:11 -c libavcodec:codec=H.264";
+					videoMode = ":0:11 -c libavcodec:codec=H.264";
 					break;
 				case "1080p 25":
-					videoMode = "0:5 -c libavcodec:codec=H.264";
+					videoMode = ":0:5 -c libavcodec:codec=H.264";
 					break;
 				default:
 					alert("Error when setting video mode, please check configuration.");
@@ -136,13 +140,28 @@ $( function() {
 		} else if (videoInput === 'testcard'){
 			switch($('#cd-dropdown-video-mode').find(":selected").text()){
 				case "1080i 50":
-					videoMode = "1920:1080:25:UYVY -c libavcodec:codec=H.264";
+					videoMode = ":1920:1080:25:UYVY -c libavcodec:codec=H.264";
 					break;
 				case "720p 50":
-					videoMode = "1280:720:25:UYVY -c libavcodec:codec=H.264";
+					videoMode = ":1280:720:25:UYVY -c libavcodec:codec=H.264";
 					break;
 				case "1080p 25":
-					videoMode = "1920:1080:25:UYVY -c libavcodec:codec=H.264";
+					videoMode = ":1920:1080:25:UYVY -c libavcodec:codec=H.264";
+					break;
+				default:
+					alert("Error when setting video mode, please check configuration.");
+					break;
+			}
+		}  else if (videoInput === 'v4l2'){
+			switch($('#cd-dropdown-video-mode').find(":selected").text()){
+				case "1080i 50":
+					videoMode = " -c libavcodec:codec=H.264";
+					break;
+				case "720p 50":
+					videoMode = " -c libavcodec:codec=H.264";
+					break;
+				case "1080p 25":
+					videoMode = " -c libavcodec:codec=H.264";
 					break;
 				default:
 					alert("Error when setting video mode, please check configuration.");
@@ -226,8 +245,8 @@ $( function() {
 	});
 	//END REMOTE CHECK
 	
-	/*
-	 * START/STOP, PLAY/PAUSE
+	/**
+	 * START/STOP, PLAY/PAUSE & RESET
 	 */
 	$("#play_button").click(
 		function() {

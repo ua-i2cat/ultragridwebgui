@@ -58,30 +58,32 @@
 					<div class="panel-heading">
 						
 						<span id="mediaType" class="label label-default"
-							style="margin-left: -5px; font-size: 14px;">Media type</span>
+							style="margin-left: -5px; font-size: 14px;">Media</span>
 						<span id="inputCol" class="label label-default"
 							style="margin-left: 35px; font-size: 14px;">Input</span> 
 						<span id="modeCol" class="label label-default"
-							style="margin-left: 50px; font-size: 14px;">Mode</span>
+							style="margin-left: 55px; font-size: 14px;">Mode</span>
 						<span id="fecCol" class="label label-default"
 							style="margin-left: 60px; font-size: 14px;">FEC</span>
 						<span id="ipCol" class="label label-default"
-							style="margin-left: 68px; font-size: 14px;">destination IP</span>
+							style="margin-left: 47px; font-size: 14px;">destination IP</span>
 						<span id="txPortCol" class="label label-default"
-							style="margin-left: 46px; font-size: 14px;">Port</span>
-
+							style="margin-left: 15px; font-size: 14px;">Tx Port</span>
+						<span id="rxPortCol" class="label label-default"
+							style="margin-left: 5px; font-size: 14px;">Rx Port</span>
 					</div>
 					<!-- VIDEO SOURCE CONFIG-->
 					<div class="panel-body" id="videoConfig">
 							<form class="form-inline" role="form" style="margin-left:-10px; margin-top:-5px;">
 								<span class="label label-default"
-									style="margin-left: 20px; font-size: 14px;">Video</span>
-								<div class="form-group" style="margin-left:22px;">
+									style="margin-left: 5px; font-size: 14px;">Video</span>
+								<div class="form-group" style="margin-left:12px;">
 									<div class="fleft">
 										<select id="cd-dropdown-video-input" class="cd-select">
 											<option value="-1" selected>undefined</option>
 											<option value="1">decklink</option>
-											<option value="2">testcard</option>
+											<option value="2">v4l2</option>
+											<option value="3">testcard</option>
 										</select>
 									</div>
 								</div>
@@ -104,13 +106,16 @@
 										</select>
 									</div>
 								</div>	
-							  <div class="form-group" style="margin-left:5px;">
+							  <div class="form-group" style="width:135px;">
 							    <input type="text" class="form-control" id="videoIP" style="text-align:center;" placeholder="127.0.0.1">
 							  </div>
 							  <div class="form-group" style="width:70px;">
-							    <input type="text" class="form-control" id="videoPort" style="text-align:center;" placeholder="5004">
+							    <input type="text" class="form-control" id="videoTxPort" style="text-align:center;" placeholder="5004">
 							  </div>
-							  <div class="checkbox" style="margin-left:10px;">
+							  <div class="form-group" style="width:70px;">
+							    <input type="text" class="form-control" id="videoRxPort" style="text-align:center;" placeholder="5004">
+							  </div>
+							  <div class="checkbox" style="margin-left:5px;width:100px;">
 							    <label>
 							      <input type="checkbox" id="enable_video"> Enable video
 							    </label>
@@ -123,8 +128,8 @@
 					<div class="panel-body" id="audioConfig">
 						<form class="form-inline" role="form" style="margin-left:-10px; margin-top:-15px;">
 							<span class="label label-default"
-								style="margin-left: 20px; font-size: 14px;">Audio</span>
-								<div class="form-group" style="margin-left:20px;">
+								style="margin-left: 3px; font-size: 14px;">Audio</span>
+								<div class="form-group" style="margin-left:12px;">
 									<div class="fleft">
 										<select id="cd-dropdown-audio-input" class="cd-select">
 											<option value="-1" selected>undefined</option>
@@ -155,13 +160,16 @@
 									</div>
 								</div>
 
-							<div class="form-group" style="margin-left:5px;">
+							<div class="form-group" style="width:135px;">
 							    <input type="text" class="form-control" id="audioIP" style="text-align:center;" placeholder="127.0.0.1">
 							  </div>
 							  <div class="form-group" style="width:70px;">
-							    <input type="text" class="form-control" id="audioPort" style="text-align:center;" placeholder="5006">
+							    <input type="text" class="form-control" id="audioTxPort" style="text-align:center;" placeholder="5006">
 							  </div>
-							  <div class="checkbox" style="margin-left:10px;">
+							  <div class="form-group" style="width:70px;">
+							    <input type="text" class="form-control" id="audioRxPort" style="text-align:center;" placeholder="5006">
+							  </div>
+							  <div class="checkbox" style="margin-left:5px;width:100px;">
 							    <label>
 							      <input type="checkbox" id="enable_audio"> Enable audio
 							    </label>
