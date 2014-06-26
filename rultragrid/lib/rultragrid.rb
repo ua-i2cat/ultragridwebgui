@@ -56,6 +56,19 @@ module RUltraGrid
       end
       puts "BYE BYE!"
     }
+    
+    def reset
+      stop_uv
+      @@uvgui_state[:have_uv] = check_ug
+      @@uvgui_state[:host] = "127.0.0.1"
+      @@uvgui_state[:port] = 5054
+      @@uvgui_state[:checked_local] = false
+      @@uvgui_state[:checked_remote] = false
+      @@uvgui_state[:uv_running] = false
+      @@uvgui_state[:uv_params] = ""
+      @@uvgui_state[:uv_play] = false
+      @@uvgui_state[:uv_vbcc] = false
+    end
 
     def initialize(host, port)
       #configure network interface buffer size
@@ -103,16 +116,18 @@ module RUltraGrid
     def local_check(cmd)
       puts "GOT LOCAL CHECK MODE\n"
       @@uvgui_state[:checked_local] = false
+      @@uvgui_state[:uv_params] = cmd
       unless cmd.nil?
         puts "got cmd to execute local test!"
         @@uvgui_state[:checked_local] = uv_test_local(cmd)
+        @@uvgui_state[:uv_params] = cmd
       end
     end
 
     def remote_check(cmd)
       puts "GOT REMOTE CHECK MODE\n"
       @@uvgui_state[:checked_remote] = false
-      @@uvgui_state[:uv_params] = ""
+      @@uvgui_state[:uv_params] = cmd
       unless cmd.nil?
         puts "got cmd to execute remote connectivity test!"
         @@uvgui_state[:checked_remote] = uv_test_remote(cmd)
@@ -123,16 +138,16 @@ module RUltraGrid
     def run_uv
       @@uvgui_state[:uv_running] = false
       cmd = @@uvgui_state[:uv_params]
+      puts cmd
       #run thread uv (parsing std and updating uvgui_state)
       if @@uvgui_state[:checked_remote] && @@uvgui_state[:checked_local]
         @@uv_thr = Thread.new do   # Calling a class method new
           begin
-            @parser = Sexpistol.new
-            @parser.scheme_compatability = true
             puts "Starting UltraGrid"
             Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
               while line = stdout_err.gets
-                puts line
+                #puts line
+                #TODO here socket push to gui
               end
               exit_status = wait_thr.value
               if exit_status.success?
@@ -320,7 +335,7 @@ module RUltraGrid
         end
 
         return !rx_error
-        
+
       end
     end
 

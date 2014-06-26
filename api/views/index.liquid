@@ -31,28 +31,18 @@
 	<div class="gui">
 
 		<!-- header -->
-		<div class="page-header">
+		<div class="page-header" style="height:85px;">
 			<h1 style="margin-left: 70px; padding-top: 20px;">
 				UltraGrid GUI <small>Front-End Interface</small>
 			</h1>
+			<button id="play_button" type="submit" class="btn btn-success btn-sm"
+				style="width:90px;margin-top: -70px;margin-left:1060px; margin-bottom: 0px;"></button>
+			<button id="reset_button" type="submit" class="btn btn-danger btn-sm"
+				style="width:90px;margin-top: -70px;margin-left:1060px;"><span class="glyphicon glyphicon-repeat"> Reset</button>
+			<button id="start_button" type="submit" class="btn btn-primary btn-sm"
+				style="width:90px;margin-top: -70px;margin-left:20px;"></button>
+		
 			
-			<form class="navbar-form navbar-right" action="/ultragrid/gui/pause"
-				method="post">
-				<button id="play_button" type="submit" class="btn btn-danger btn-sm"
-					style="margin-right: 10px; margin-top: -90px;">Pause</button>
-			</form>
-
-			<form class="navbar-form navbar-right" action="/ultragrid/gui/stop"
-				method="post">
-				<button id="stop_button" type="submit" class="btn btn-danger btn-sm"
-					style="margin-right: 10px; margin-top: -90px;">Stop</button>
-			</form>
-			
-			<form class="navbar-form navbar-right" action="/ultragrid/gui/reset"
-				method="post">
-				<button id="reset_button" type="submit" class="btn btn-danger btn-sm"
-					style="margin-right: 10px; margin-top: -90px;">Reset</button>
-			</form>
 		</div>
 		
 		<!-- {:have_uv=>true, :checked_local=>false, :checked_remote=>false, 
@@ -197,7 +187,7 @@
 							<span class="glyphicon glyphicon-cog"></span> Check
 						</button>
 						<span id="localCheckButtonSuccess"
-							class="glyphicon glyphicon-ok-circle"
+							class="glyphicon glyphicon-question-sign"
 							style="font-size: 30px; top: 10px; left: 20px; color: green;"></span>
 					</div>
 				</div>
@@ -219,7 +209,7 @@
 							<span class="glyphicon glyphicon-flash"></span> Connect
 						</button>
 						<span id="connectivityCheckButtonSuccess"
-							class="glyphicon glyphicon-ok-circle"
+							class="glyphicon glyphicon-question-sign"
 							style="font-size: 30px; top: 10px; left: 20px; color: green;"></span>
 					</div>
 				</div>
@@ -365,7 +355,7 @@
 		<hr noshade id="dividerAV">
 
 		<!-- terminal feedback -->
-		<div class="row" id="audioParams" style="margin-left: 0px;">
+		<div class="row" id="realtimeFeedback" style="margin-left: 0px;">
 			<div class="col-md-12" style="width:99%">
 				<div class="panel panel-default" style="">
 					<div class="panel-heading" style="text-align:center;">
@@ -396,47 +386,6 @@
 			$( '#cd-dropdown' ).dropdown();
 		});
 	</script>
-	<script type="text/javascript">
-		function set_grid(id) {
-			// $.post("/app/grid", { id: id });
-			$.ajax({
-				type : 'POST',
-				url : "/app/grid",
-				data : "id=" + id,
-				async : false
-			});
-			location.reload();
-		}
-	</script>
-	<script type="text/javascript">
-		function set_output_grid(id) {
-			// $.post("/app/grid", { id: id });
-			$.ajax({
-				type : 'POST',
-				url : "/app/output_grid",
-				data : "id=" + id,
-				async : false
-			});
-			location.reload();
-		}
-	</script>
-	<script type="text/javascript">
-		function videowall_demo() {
-			// $.post("/app/grid", { id: id });
-			$.ajax({
-				type : 'POST',
-				url : "/app/videowall_demo",
-				async : false
-			});
-			location.reload();
-		}
-	</script>
-	<script type="text/javascript">
-      function showValue(str_id, crop_id, newValue) {
-        id = "op_" + str_id + "_" + crop_id 
-        document.getElementById(id).value=newValue;
-      }
-    </script>
 </body>
 </html>
 

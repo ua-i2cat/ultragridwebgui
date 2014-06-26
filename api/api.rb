@@ -78,12 +78,25 @@ class UltraGridAPI < Sinatra::Base
     dashboard
   end
   
+  get '/ultragrid/gui/state' do
+    #stop ug process
+    content_type :json
+    return settings.ultragrid.get_curr_state.to_json
+  end  
+  
   post '/ultragrid/gui/check' do
     #check local config. or remote config.&connectivity 
     content_type :json
     settings.ultragrid.check(params)
     return settings.ultragrid.get_curr_state.to_json
   end
+
+  get '/ultragrid/gui/reset' do
+    #start ug process and play stream
+    content_type :json
+    settings.ultragrid.reset
+    return settings.ultragrid.get_curr_state.to_json
+  end  
   
   get '/ultragrid/gui/start' do
     #start ug process and play stream

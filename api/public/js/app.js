@@ -14,7 +14,26 @@ $( function() {
 	var audioPort = "5006";
 	var audioCMD = "";
 	var cmnd = "";
+
+	var state;
 	
+	//startup
+	$(document).ready(function() {
+		//get current state
+		$.ajax({
+			type : 'GET',
+			url : "/ultragrid/gui/state",
+			async : false,
+			success: function(msg){
+				console.log(msg);
+				state = msg;
+				process_state();
+			},
+			error: function(xhr, msg) { 
+				console.log('ERROR: '+msg + '\n' + xhr.responseText);
+			}
+		});
+	});
 	/**
 	 * LOCAL CHECK
 	 */
@@ -88,45 +107,11 @@ $( function() {
 			async : false,
 			success: function(msg){
 				console.log(msg);
-//				if(!msg){
-//					$("#loading").hide();
-//					$("#msg").show();
-//				}
-//				else if(msg.msg == "1"){
-//					location.href = "/AppServer/#/adminOverview";
-//					loginUser = msg.userId;
-//					loginOrg = msg.orgId;
-//					loginOrgName = msg.orgName;
-//					loginUserName = msg.userName;
-//				} 
-//				else if(msg.msg == "2") {
-//					location.href = "/AppServer/#/clientOverview/"+msg.orgId;
-//					loginUser = msg.userId;
-//					loginOrg = msg.orgId;
-//					loginOrgName = msg.orgName;
-//					loginUserName = msg.userName;
-//				} 
+				state = msg;
+				process_state();
 			},
 			error: function(xhr, msg) { 
-				console.log(msg + '\n' + xhr.responseText);
-//				if(!xhr.responseText){
-//					$("#loading").hide();
-//					$("#msg").show();
-//				}
-//				else if(xhr.responseText.msg == "1"){
-//					location.href = "/AppServer/#/adminOverview";
-//					loginUser = xhr.responseText.userId;
-//					loginOrg = xhr.responseText.orgId;
-//					loginOrgName = xhr.responseText.orgName;
-//					loginUserName = xhr.responseText.userName;
-//				} 
-//				else if(xhr.responseText.msg == "2"){
-//					location.href = "/AppServer/#/clientOverview/"+xhr.responseText.orgId;
-//					loginUser = xhr.responseText.userId;
-//					loginOrg = xhr.responseText.orgId;
-//					loginOrgName = xhr.responseText.orgName;
-//					loginUserName = xhr.responseText.userName;
-//				} 
+				console.log('ERROR: '+msg + '\n' + xhr.responseText);
 			}
 		});
 	}
@@ -151,10 +136,10 @@ $( function() {
 		} else if (videoInput === 'testcard'){
 			switch($('#cd-dropdown-video-mode').find(":selected").text()){
 				case "1080i 50":
-					videoMode = "1920:1080:50:UYVY -c libavcodec:codec=H.264";
+					videoMode = "1920:1080:25:UYVY -c libavcodec:codec=H.264";
 					break;
 				case "720p 50":
-					videoMode = "1280:720:50:UYVY -c libavcodec:codec=H.264";
+					videoMode = "1280:720:25:UYVY -c libavcodec:codec=H.264";
 					break;
 				case "1080p 25":
 					videoMode = "1920:1080:25:UYVY -c libavcodec:codec=H.264";
@@ -231,49 +216,164 @@ $( function() {
 				async : false,
 				success: function(msg){
 					console.log(msg);
-//						if(!msg){
-//							$("#loading").hide();
-//							$("#msg").show();
-//						}
-//						else if(msg.msg == "1"){
-//							location.href = "/AppServer/#/adminOverview";
-//							loginUser = msg.userId;
-//							loginOrg = msg.orgId;
-//							loginOrgName = msg.orgName;
-//							loginUserName = msg.userName;
-//						} 
-//						else if(msg.msg == "2") {
-//							location.href = "/AppServer/#/clientOverview/"+msg.orgId;
-//							loginUser = msg.userId;
-//							loginOrg = msg.orgId;
-//							loginOrgName = msg.orgName;
-//							loginUserName = msg.userName;
-//						} 
+					state = msg;
+					process_state();
 				},
 				error: function(xhr, msg) { 
-					console.log(msg + '\n' + xhr.responseText);
-//						if(!xhr.responseText){
-//							$("#loading").hide();
-//							$("#msg").show();
-//						}
-//						else if(xhr.responseText.msg == "1"){
-//							location.href = "/AppServer/#/adminOverview";
-//							loginUser = xhr.responseText.userId;
-//							loginOrg = xhr.responseText.orgId;
-//							loginOrgName = xhr.responseText.orgName;
-//							loginUserName = xhr.responseText.userName;
-//						} 
-//						else if(xhr.responseText.msg == "2"){
-//							location.href = "/AppServer/#/clientOverview/"+xhr.responseText.orgId;
-//							loginUser = xhr.responseText.userId;
-//							loginOrg = xhr.responseText.orgId;
-//							loginOrgName = xhr.responseText.orgName;
-//							loginUserName = xhr.responseText.userName;
-//						} 
+					console.log('ERROR: '+msg + '\n' + xhr.responseText);
 				}
 			});
 	});
 	//END REMOTE CHECK
-
+	
+	/*
+	 * START/STOP, PLAY/PAUSE
+	 */
+	$("#play_button").click(
+		function() {
+			var uri = "";
+			if(state.uv_play == true) uri = "/ultragrid/gui/pause";
+			else  uri = "/ultragrid/gui/play";
+			$.ajax({
+				type : 'GET',
+				url : uri,
+				async : false,
+				success: function(msg){
+					console.log(msg);
+					state = msg;
+					process_state();
+				},
+				error: function(xhr, msg) { 
+					console.log('ERROR: '+msg + '\n' + xhr.responseText);
+				}
+			});
+	});
+	$("#start_button").click(
+		function() {
+			var uri = "";
+			if(state.uv_running == true) uri = "/ultragrid/gui/stop";
+			else  uri = "/ultragrid/gui/start";
+			$.ajax({
+				type : 'GET',
+				url : uri,
+				async : false,
+				success: function(msg){
+					console.log(msg);
+					state = msg;
+					process_state();
+				},
+				error: function(xhr, msg) { 
+					console.log('ERROR: '+msg + '\n' + xhr.responseText);
+				}
+			});
+	});
+	$("#reset_button").click(
+		function() {
+			$.ajax({
+				type : 'GET',
+				url : "/ultragrid/gui/reset",
+				async : false,
+				success: function(msg){
+					console.log(msg);
+					state = msg;
+					process_state();
+				},
+				error: function(xhr, msg) { 
+					console.log('ERROR: '+msg + '\n' + xhr.responseText);
+				}
+			});
+			location.reload();
+	});
+	
+	
+	//SET WEBAPP STATE
+	function process_state(){
+		$('#play_button').hide();
+		$('#start_button').hide();
+		$('#connectivityCheckButton').addClass('is-disabled');
+		$('#videoParams').addClass('is-disabled');
+		$('#realtimeFeedback').addClass('is-disabled');
+		
+		if(state.uv_play == true){
+			$('#play_button').removeClass('btn-success');
+			$('#play_button').addClass('btn-warning');
+			$('#play_button').html('<span class="glyphicon glyphicon-pause">  Pause');
+		} else {
+			$('#play_button').removeClass('btn-warning');
+			$('#play_button').addClass('btn-success');
+			$('#play_button').html('<span class="glyphicon glyphicon-play"> Play');
+		}
+		
+		if(state.uv_running == true){
+			$('#start_button').removeClass('btn-primary');
+			$('#start_button').addClass('btn-danger');
+			$('#start_button').html('<span class="glyphicon glyphicon-stop">  Stop');
+		} else {
+			$('#start_button').removeClass('btn-danger');
+			$('#start_button').addClass('btn-primary');
+			$('#start_button').html('<span class="glyphicon glyphicon-off"> Start');
+		}
+		
+		if(state.checked_local == false && state.uv_params != ""){
+			$('#localCheckButtonSuccess').removeClass('glyphicon-question-sign');
+			$('#localCheckButtonSuccess').removeClass('glyphicon-ok-circle');
+			$('#localCheckButtonSuccess').addClass('glyphicon-remove-circle');
+			$('#connectivityCheckButton').removeClass('is-enabled');
+			$('#connectivityCheckButton').addClass('is-disabled');
+		}
+		if(state.checked_local == true && state.uv_params != ""){
+			$('#localCheckButtonSuccess').removeClass('glyphicon-question-sign');
+			$('#localCheckButtonSuccess').removeClass('glyphicon-remove-circle');
+			$('#localCheckButtonSuccess').addClass('glyphicon-ok-circle');
+			$('#connectivityCheckButton').removeClass('is-disabled');
+			$('#connectivityCheckButton').addClass('is-enabled');
+			$('#localCheckButton').removeClass('is-enabled');
+			$('#localCheckButton').addClass('is-disabled');
+			$('#videoConfig').removeClass('is-enabled');
+			$('#audioConfig').removeClass('is-enabled');
+			$('#videoConfig').addClass('is-disabled');
+			$('#audioConfig').addClass('is-disabled');
+		}
+		if(state.checked_local == true && state.checked_remote == false && state.uv_params != ""){
+			$('#connectivityCheckButtonSuccess').removeClass('glyphicon-question-sign');
+			$('#connectivityCheckButtonSuccess').removeClass('glyphicon-ok-circle');
+			$('#connectivityCheckButtonSuccess').addClass('glyphicon-remove-circle');
+		}
+		if(state.checked_local == true && state.checked_remote == true && state.uv_params != ""){
+			$('#connectivityCheckButtonSuccess').removeClass('glyphicon-question-sign');
+			$('#connectivityCheckButtonSuccess').removeClass('glyphicon-remove-circle');
+			$('#connectivityCheckButtonSuccess').addClass('glyphicon-ok-circle');
+			$('#connectivityCheckButton').removeClass('is-enabled');
+			$('#connectivityCheckButton').addClass('is-disabled');
+			$('#start_button').show();
+		}
+		
+		if(state.uv_running == false){
+			$('#play_button').hide();
+			$('#reset_button').show();
+			$('#videoParams').removeClass('is-enabled');
+			$('#realtimeFeedback').removeClass('is-enabled');
+			$('#videoParams').addClass('is-disabled');
+			$('#realtimeFeedback').addClass('is-disabled');
+		}else{
+			$('#play_button').show();
+			$('#reset_button').hide();
+			$('#videoParams').removeClass('is-disabled');
+			$('#realtimeFeedback').removeClass('is-disabled');
+			$('#videoParams').addClass('is-enabled');
+			$('#realtimeFeedback').addClass('is-enabled');
+		}
+	}
 });
 
+
+/*
+ * localCheckButtonSuccess
+ * connectivityCheckButtonSuccess
+ * 
+ * glyphicons:
+ * 
+ * glyphicon-question-sign - not set
+ * glyphicon-remove-circle - error
+ * glyphicon-ok-circle	   - ok	
+ */
