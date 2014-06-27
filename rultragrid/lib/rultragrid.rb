@@ -149,7 +149,7 @@ module RUltraGrid
             puts "Starting UltraGrid"
             Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
               while line = stdout_err.gets
-                #puts line
+                puts line
                 #TODO here socket push to gui
                 #TODO set timeout for RX OK! to 30s, then shutdown by socket
               end

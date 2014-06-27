@@ -330,7 +330,6 @@ $( function() {
 			location.reload();
 	});
 	
-	
 	//SET WEBAPP STATE
 	function process_state(){
 		$('#play_button').hide();

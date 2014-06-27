@@ -86,7 +86,7 @@
 									style="margin-left: 5px; font-size: 14px;">Video</span>
 								<div class="form-group" style="margin-left:12px;">
 									<div class="fleft">
-										<select id="cd-dropdown-video-input" class="cd-select" onchange="check_input(this);">
+										<select id="cd-dropdown-video-input" class="cd-select" onchange="check_input();">
 											<option value="-1" selected>undefined</option>
 											<option value="1">decklink</option>
 											<option value="2">v4l2</option>
@@ -242,7 +242,7 @@
 						<b>Video: </b>
 						<div class="btn-group" style="margin-left: 33px;">
 						<div class="fleft">
-							<select id="cd-dropdown" class="cd-select">
+							<select id="cd-dropdown-video-cc" class="cd-select" onchange="check_ccmode();">
 								<option value="-1" selected>Set control mode (default:manual)</option>
 								<option value="1">Manual</option>
 								<option value="2">Automatic</option>
@@ -398,12 +398,11 @@
 	<script src="/js/app.js"></script>
 	<script type="text/javascript">
 		$( function() {	
-			$( '#cd-dropdown' ).dropdown();
+			$( '#cd-dropdown-video-cc' ).dropdown();
 		});
 	</script>
 	<script type="text/javascript">
-		function check_input(sel){
-			console.log(sel)
+		function check_input(){
 			if($('#cd-dropdown-video-input').find(":selected").text() == "v4l2"){
 				$('#cd-dropdown-video-mode').removeClass('is-enabled');
 				$('#cd-dropdown-video-mode').addClass('is-disabled');
@@ -411,6 +410,37 @@
 				$('#cd-dropdown-video-mode').removeClass('is-disabled');
 				$('#cd-dropdown-video-mode').addClass('is-enabled');
 			}
+		}
+		function check_ccmode(){
+ 			switch($('#cd-dropdown-video-cc').find(":selected").val()){
+ 			case "1":
+ 				set_cc_mode("manual");
+ 				break;
+ 			case "2":
+ 				set_cc_mode("auto");
+ 				break;
+ 			default:
+ 				set_cc_mode("manual");
+ 				break;
+ 			}
+		}
+		
+		//CONGESTION CONTROL SETUP
+		function set_cc_mode(mode){
+			$.ajax({
+				type : 'POST',
+				url : '/ultragrid/gui/ccontrol',
+				data : "mode="+mode,
+				async : false,
+				success: function(msg){
+					console.log(msg);
+					state = msg;
+					process_state();
+				},
+				error: function(xhr, msg) { 
+					console.log('ERROR: '+msg + '\n' + xhr.responseText);
+				}
+			});
 		}
 	</script>
 </body>
