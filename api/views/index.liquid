@@ -33,16 +33,23 @@
 		<!-- header -->
 		<div class="page-header" style="height:85px;">
 			<h1 style="margin-left: 70px; padding-top: 20px;">
-				UltraGrid GUI <small>Front-End Interface</small>
+				UltraGrid GUI 
 			</h1>
+
 			<button id="play_button" type="submit" class="btn btn-success btn-sm"
 				style="width:90px;margin-top: -70px;margin-left:1060px; margin-bottom: 0px;"></button>
 			<button id="reset_button" type="submit" class="btn btn-danger btn-sm"
 				style="width:90px;margin-top: -70px;margin-left:1060px;"><span class="glyphicon glyphicon-repeat"> Reset</button>
 			<button id="start_button" type="submit" class="btn btn-primary btn-sm"
 				style="width:90px;margin-top: -70px;margin-left:20px;"></button>
-		
-			
+			<button id="setcontrol_button" type="submit" class="btn btn-success btn-sm"
+				style="width:85px;margin-top: -110px;margin-left:865px;"><span class="glyphicon glyphicon glyphicon-wrench"> Set </span></button>
+			<div class="form-group" style="width:70px;height:15px;margin-left:780px; margin-top: -80px;">
+				<input id="setcontrol_input" type="text" class="form-control" style="text-align:center;" placeholder="5054"></input>
+			</div>
+			<div id="setcontrol_label"  class="form-group" style="margin-top:-24px;margin-left: 665px;" >
+				<span class="label label-default" style="padding-top:8px;padding-bottom:10px;font-size: 14px;"> Control port: </span>
+			</div>
 		</div>
 		
 		<!-- {:have_uv=>true, :checked_local=>false, :checked_remote=>false, 
@@ -51,7 +58,7 @@
 		:c_fps=>0, :c_br=>0, :c_size=>"0x0", :losses=>0} -->
 		
 		<!--  interface -->
-		<div class="row" style="margin-left: 0px; margin-bottom: -20px;">
+		<div class="row" id="configurationRow" style="margin-left: 0px; margin-bottom: -20px;">
 			<!--  source select -->
 			<div class="col-md-8">
 				<div class="panel panel-default">
@@ -79,7 +86,7 @@
 									style="margin-left: 5px; font-size: 14px;">Video</span>
 								<div class="form-group" style="margin-left:12px;">
 									<div class="fleft">
-										<select id="cd-dropdown-video-input" class="cd-select">
+										<select id="cd-dropdown-video-input" class="cd-select" onchange="check_input(this);">
 											<option value="-1" selected>undefined</option>
 											<option value="1">decklink</option>
 											<option value="2">v4l2</option>
@@ -393,6 +400,18 @@
 		$( function() {	
 			$( '#cd-dropdown' ).dropdown();
 		});
+	</script>
+	<script type="text/javascript">
+		function check_input(sel){
+			console.log(sel)
+			if($('#cd-dropdown-video-input').find(":selected").text() == "v4l2"){
+				$('#cd-dropdown-video-mode').removeClass('is-enabled');
+				$('#cd-dropdown-video-mode').addClass('is-disabled');
+			} else {
+				$('#cd-dropdown-video-mode').removeClass('is-disabled');
+				$('#cd-dropdown-video-mode').addClass('is-enabled');
+			}
+		}
 	</script>
 </body>
 </html>

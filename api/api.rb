@@ -31,7 +31,7 @@ require 'rultragrid'
 class UltraGridAPI < Sinatra::Base
 
   set :ip, '127.0.0.1'
-  set :port, 8054
+  #set :port, 8054
   set :ultragrid, RUltraGrid::UltraGrid.new(settings.ip, settings.port)
   
   def dashboard (id = 1)
@@ -83,6 +83,13 @@ class UltraGridAPI < Sinatra::Base
     content_type :json
     return settings.ultragrid.get_curr_state.to_json
   end  
+  
+  post '/ultragrid/gui/set_controlport' do
+    #check local config. or remote config.&connectivity 
+    content_type :json
+    settings.ultragrid.set_control_port(params)
+    return settings.ultragrid.get_curr_state.to_json
+  end
   
   post '/ultragrid/gui/check' do
     #check local config. or remote config.&connectivity 

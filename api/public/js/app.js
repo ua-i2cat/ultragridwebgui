@@ -1,6 +1,7 @@
 $( function() {	
 
 	// globals
+	var controlPort = "5054";
 	var videoInput;
 	var videoMode;
 	var videoFEC;
@@ -29,12 +30,50 @@ $( function() {
 			success: function(msg){
 				console.log(msg);
 				state = msg;
+				console.log(state.port);
+				if(state.port == 0){
+					$('#configurationRow').removeClass('is-enabled');
+					$('#configurationRow').addClass('is-disabled');
+					$('#reset_button').removeClass('is-enabled');
+					$('#reset_button').addClass('is-disabled');
+					$('#setcontrol_button').show();
+					$('#setcontrol_input').show();
+					$('#setcontrol_label').show();
+				} else {
+					$('#configurationRow').removeClass('is-disabled');
+					$('#configurationRow').addClass('is-enabled');
+					$('#reset_button').removeClass('is-disabled');
+					$('#reset_button').addClass('is-enabled');
+					$('#setcontrol_button').hide();
+					$('#setcontrol_input').hide();
+					$('#setcontrol_label').hide();
+				}
 				process_state();
 			},
 			error: function(xhr, msg) { 
 				console.log('ERROR: '+msg + '\n' + xhr.responseText);
 			}
 		});
+	});
+	//First configuration requirement
+	$("#setcontrol_button").click(
+		function() {
+			if(!$('#setcontrol_input').val() == '') controlPort = $('#setcontrol_input').val();
+			$.ajax({
+				type : 'POST',
+				url : "/ultragrid/gui/set_controlport",
+				data : "port="+controlPort,
+				async : false,
+				success: function(msg){
+					console.log(msg);
+					state = msg;
+					process_state();
+				},
+				error: function(xhr, msg) { 
+					console.log('ERROR: '+msg + '\n' + xhr.responseText);
+				}
+			});
+			location.reload();
 	});
 	/**
 	 * LOCAL CHECK
@@ -67,7 +106,7 @@ $( function() {
 	});
 	
 	function create_video_cmd(){
-		if(videoInput == "undefined" || videoMode == "undefined" || videoFEC == "undefined"){
+		if(videoInput == "undefined" || (videoInput != "v4l2" && videoMode == "undefined") || videoFEC == "undefined"){
 			alert("Undefined parameters are not allowed");
 		}
 		if(!$('#videoIP').val() == '') videoIP = $('#videoIP').val();
@@ -92,13 +131,13 @@ $( function() {
 	
 	function process_config(){
 		if($('#enable_video').is(':checked') && $('#enable_audio').is(':checked')){
-			cmnd = "uv --control-port 8054 "+videoCMD+" "+audioCMD+" "+videoIP+" -A "+audioIP+" -P"+videoRxPort+":"+videoTxPort+":"+audioRxPort+":"+audioTxPort;
+			cmnd = "uv --control-port "+state.port+" "+videoCMD+" "+audioCMD+" "+videoIP+" -A "+audioIP+" -P"+videoRxPort+":"+videoTxPort+":"+audioRxPort+":"+audioTxPort;
 			console.log("AV COMMAND: "+cmnd);
 		} else if($('#enable_video').is(':checked') && !$('#enable_audio').is(':checked')){
-			cmnd = "uv --control-port 8054 "+videoCMD+" "+videoIP+" -P"+videoRxPort+":"+videoTxPort;
+			cmnd = "uv --control-port "+state.port+" "+videoCMD+" "+videoIP+" -P"+videoRxPort+":"+videoTxPort;
 			console.log("V COMMAND: "+cmnd);
 		} else if(!$('#enable_video').is(':checked') && $('#enable_audio').is(':checked')){
-			cmnd = "uv --control-port 8054 "+audioCMD+" "+audioIP+" -P"+videoRxPort+":"+videoTxPort+":"+audioRxPort+":"+audioTxPort;
+			cmnd = "uv --control-port "+state.port+" "+audioCMD+" "+audioIP+" -P"+videoRxPort+":"+videoTxPort+":"+audioRxPort+":"+audioTxPort;
 			console.log("A COMMAND: "+cmnd);
 		} else {
 			alert("ERROR: unable to set configuration. Please, check parameters.");
@@ -153,20 +192,7 @@ $( function() {
 					break;
 			}
 		}  else if (videoInput === 'v4l2'){
-			switch($('#cd-dropdown-video-mode').find(":selected").text()){
-				case "1080i 50":
-					videoMode = " -c libavcodec:codec=H.264";
-					break;
-				case "720p 50":
-					videoMode = " -c libavcodec:codec=H.264";
-					break;
-				case "1080p 25":
-					videoMode = " -c libavcodec:codec=H.264";
-					break;
-				default:
-					alert("Error when setting video mode, please check configuration.");
-					break;
-			}
+			videoMode = " -c libavcodec:codec=H.264";
 		} else {
 			alert("Error when processing selected video input. Please, check configuration.");
 		}

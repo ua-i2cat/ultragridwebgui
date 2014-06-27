@@ -39,7 +39,7 @@ module RUltraGrid
       :checked_local => false, :checked_remote => false,
       :uv_running => false, :uv_params => "",   #TODO data persistent with mongodb (if reinit interface re-check if uv exists and uv running params...)
       :uv_play => false, :uv_vbcc => false,
-      :host => "127.0.0.1", :port => 8054,
+      :host => "127.0.0.1", :port => 0,
       :o_fps => 0, :o_br => 0, :o_size => "0x0",
       :c_fps => 0, :c_br => 0, :c_size => "0x0",
       :losses => 0}
@@ -61,7 +61,7 @@ module RUltraGrid
       stop_uv
       @@uvgui_state[:have_uv] = check_ug
       @@uvgui_state[:host] = "127.0.0.1"
-      @@uvgui_state[:port] = 8054
+      @@uvgui_state[:port] = 0
       @@uvgui_state[:checked_local] = false
       @@uvgui_state[:checked_remote] = false
       @@uvgui_state[:uv_running] = false
@@ -78,7 +78,10 @@ module RUltraGrid
 
       @@uvgui_state[:have_uv] = check_ug
       @@uvgui_state[:host] = host
-      @@uvgui_state[:port] = port
+    end
+    
+    def set_control_port(input)
+      @@uvgui_state[:port] = input[:port]
     end
 
     #
@@ -148,6 +151,7 @@ module RUltraGrid
               while line = stdout_err.gets
                 #puts line
                 #TODO here socket push to gui
+                #TODO set timeout for RX OK! to 30s, then shutdown by socket
               end
               exit_status = wait_thr.value
               if exit_status.success?
@@ -235,7 +239,7 @@ module RUltraGrid
     #  puts "RESPONSE---> #{response}"
 
     def uv_test_local(cmd)
-      test_duration = 4 #seconds
+      test_duration = 2 #seconds
       puts cmd
 
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
@@ -296,7 +300,7 @@ module RUltraGrid
     end
 
     def uv_test_remote(cmd)
-      test_duration = 5 #seconds
+      test_duration = 3 #seconds
       puts cmd
 
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
