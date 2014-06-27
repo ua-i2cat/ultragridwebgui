@@ -431,7 +431,7 @@ $( function() {
 	function set_statistics(){
 		$('#ovres').html('<span id="ovres" class="label label-default col-lg-4"style="margin-left: 30px; font-size: 14px;">'+state.o_size+'</span>&nbsppixel');
 		$('#ovfps').html('<span id="ovfps" class="label label-default col-lg-4" style="margin-left: 30px; font-size: 14px;">'+toFixedPrecision(state.o_fps,2)+'</span> &nbspfps');
-		$('#ovbr').html('<span id="ovbr" class="label label-default col-lg-4" style="margin-left: 30px; font-size: 14px;">'+toFixedPrecision(state.o_br,3)+'</span> &nbspkbps');
+		$('#ovbr').html('<span id="ovbr" class="label label-default col-lg-4" style="margin-left: 30px; font-size: 14px;">'+toFixedPrecision(state.o_br,3) * (audioFEC == "-f none" ? 1 : 1.3)+'</span> &nbspkbps');
 	}
 	
 		//WEBSOCKET
