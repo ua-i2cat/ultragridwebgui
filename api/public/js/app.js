@@ -17,7 +17,8 @@ $( function() {
 	var audioTxPort = "5006";
 	var audioCMD = "";
 	var cmnd = "";
-
+	var statsInterval;
+	var statsRefreshInterval = 1000; //1 second
 	var state;
 	
 	//startup
@@ -30,7 +31,6 @@ $( function() {
 			success: function(msg){
 				console.log(msg);
 				state = msg;
-				console.log(state.port);
 				if(state.port == 0){
 					$('#configurationRow').removeClass('is-enabled');
 					$('#configurationRow').addClass('is-disabled');
@@ -114,8 +114,6 @@ $( function() {
 		if(!$('#videoTxPort').val() == '') videoTxPort = $('#videoTxPort').val();
 		
 		videoCMD = "-t "+videoInput+""+videoMode+" "+videoFEC;	
-		console.log(videoCMD);
-
 	}
 	function create_audio_cmd(){
 		if(audioInput == "undefined" || audioMode == "undefined" || audioFEC == "undefined"){
@@ -126,7 +124,6 @@ $( function() {
 		if(!$('#audioTxPort').val() == '') audioTxPort = $('#audioTxPort').val();
 		
 		audioCMD = "-s "+audioInput+" "+audioMode+" "+audioFEC;	
-		console.log(audioCMD);
 	}
 	
 	function process_config(){
@@ -399,6 +396,7 @@ $( function() {
 			$('#realtimeFeedback').removeClass('is-enabled');
 			$('#videoParams').addClass('is-disabled');
 			$('#realtimeFeedback').addClass('is-disabled');
+			clearInterval(statsInterval);
 		}else{
 			$('#play_button').show();
 			$('#reset_button').hide();
@@ -406,7 +404,45 @@ $( function() {
 			$('#realtimeFeedback').removeClass('is-disabled');
 			$('#videoParams').addClass('is-enabled');
 			$('#realtimeFeedback').addClass('is-enabled');
+			stateInterval = setInterval(function() {
+				get_statistics();
+			}, statsRefreshInterval);
 		}
+	}
+	
+	//STATS
+		//REST
+	function get_statistics(){
+		$.ajax({
+			type : 'GET',
+			url : "/ultragrid/gui/statistics",
+			async : true,
+			success: function(msg){
+				console.log(msg);
+				state = msg;
+				set_statistics();
+			},
+			error: function(xhr, msg) { 
+				console.log('ERROR: '+msg + '\n' + xhr.responseText);
+			}
+		});
+	}
+	
+	function set_statistics(){
+		$('#ovres').html('<span id="ovres" class="label label-default col-lg-4"style="margin-left: 30px; font-size: 14px;">'+state.o_size+'</span>&nbsppixel');
+		$('#ovfps').html('<span id="ovfps" class="label label-default col-lg-4" style="margin-left: 30px; font-size: 14px;">'+toFixedPrecision(state.o_fps,2)+'</span> &nbspfps');
+		$('#ovbr').html('<span id="ovbr" class="label label-default col-lg-4" style="margin-left: 30px; font-size: 14px;">'+toFixedPrecision(state.o_br,3)+'</span> &nbspkbps');
+	}
+	
+		//WEBSOCKET
+	
+	
+	
+	
+	//UTILS
+	function toFixedPrecision(value, precision) {
+	    var power = Math.pow(10, precision || 0);
+	    return (Math.round(value * power) / power).toFixed(precision);
 	}
 });
 

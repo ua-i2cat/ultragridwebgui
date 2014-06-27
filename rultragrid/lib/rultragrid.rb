@@ -56,7 +56,7 @@ module RUltraGrid
       end
       puts "BYE BYE!"
     }
-    
+
     def reset
       stop_uv
       @@uvgui_state[:have_uv] = check_ug
@@ -79,7 +79,7 @@ module RUltraGrid
       @@uvgui_state[:have_uv] = check_ug
       @@uvgui_state[:host] = host
     end
-    
+
     def set_control_port(input)
       @@uvgui_state[:port] = input[:port]
     end
@@ -152,6 +152,36 @@ module RUltraGrid
                 puts line
                 #TODO here socket push to gui
                 #TODO set timeout for RX OK! to 30s, then shutdown by socket
+#                :o_fps => 0, :o_br => 0, :o_size => "0x0",
+#                :c_fps => 0, :c_br => 0, :c_size => "0x0",
+#                :losses => 0
+                
+                #CASE 1 [GET PARAMS]
+                #string.partition('=').last
+                if line.include?"[OFPS]"
+                  @@uvgui_state[:o_fps] = line.partition(']').last
+                end
+                if line.include?"[ORES]"
+                  @@uvgui_state[:o_size] = line.partition(']').last
+                end
+                if line.include?"[OBR]"
+                  @@uvgui_state[:o_br] = line.partition(']').last
+                end
+                if line.include?"[CFPS]"
+                  @@uvgui_state[:c_fps] = line.partition(']').last
+                end
+                if line.include?"[CFPS]"
+                  @@uvgui_state[:c_size] = line.partition(']').last
+                end
+                if line.include?"[CBR]"
+                  @@uvgui_state[:c_br] = line.partition(']').last
+                end
+                #CASE 2 [GET RX LOSSES]
+
+                #CASE 3 [erase AUDIO AND VIDEO MSG for CHECKS]
+
+                #CASE 4 [PUTS UG OUTPUT TO SOCKET FEEDBACK]
+
               end
               exit_status = wait_thr.value
               if exit_status.success?

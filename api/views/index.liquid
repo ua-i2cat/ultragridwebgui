@@ -43,11 +43,11 @@
 			<button id="start_button" type="submit" class="btn btn-primary btn-sm"
 				style="width:90px;margin-top: -70px;margin-left:20px;"></button>
 			<button id="setcontrol_button" type="submit" class="btn btn-success btn-sm"
-				style="width:85px;margin-top: -110px;margin-left:865px;"><span class="glyphicon glyphicon glyphicon-wrench"> Set </span></button>
-			<div class="form-group" style="width:70px;height:15px;margin-left:780px; margin-top: -80px;">
+				style="width:85px;margin-top: -110px;margin-left:765px;"><span class="glyphicon glyphicon glyphicon-wrench"> Set </span></button>
+			<div class="form-group" style="width:70px;height:15px;margin-left:680px; margin-top: -80px;">
 				<input id="setcontrol_input" type="text" class="form-control" style="text-align:center;" placeholder="5054"></input>
 			</div>
-			<div id="setcontrol_label"  class="form-group" style="margin-top:-24px;margin-left: 665px;" >
+			<div id="setcontrol_label"  class="form-group" style="margin-top:-24px;margin-left: 565px;" >
 				<span class="label label-default" style="padding-top:8px;padding-bottom:10px;font-size: 14px;"> Control port: </span>
 			</div>
 		</div>
@@ -252,31 +252,30 @@
 					</div>
 					<div class="panel-body">
 						<span class="label label-default col-lg-4"
-							style="margin-left: 30px; font-size: 14px;">Parameter</span> <span
-							class="label label-default col-lg-4"
+							style="margin-left: 30px; font-size: 14px;">Parameter</span> 
+						<span class="label label-default col-lg-4"
 							style="margin-left: 30px; font-size: 14px;">Original Value</span>
 
 					</div>
 					<div class="panel-body" style="margin-top: -17px;">
 						<span class="label label-default col-lg-4"
-							style="margin-left: 30px; font-size: 14px;">Resolution</span> <span
-							class="label label-default col-lg-4"
-							style="margin-left: 30px; font-size: 14px;">1920 x 1080</span>&nbsppixels
+							style="margin-left: 30px; font-size: 14px;">Resolution</span> 
+						<div id="ovres"><span class="label label-default col-lg-4"
+							style="margin-left: 30px; font-size: 14px;"></span></div>
 
 					</div>
 					<div class="panel-body" style="margin-top: -15px;">
 						<span class="label label-default col-lg-4"
-							style="margin-left: 30px; font-size: 14px;">Frame rate</span> <span
-							class="label label-default col-lg-4"
-							style="margin-left: 30px; font-size: 14px;">50</span> &nbspfps
+							style="margin-left: 30px; font-size: 14px;">Frame rate</span>
+						<div id="ovfps"><span class="label label-default col-lg-4"
+							style="margin-left: 30px; font-size: 14px;"></span></div>
 
 					</div>
 					<div class="panel-body" style="margin-top: -15px;">
 						<span class="label label-default col-lg-4"
-							style="margin-left: 30px; font-size: 14px;">Bit rate</span> <span
-							class="label label-default col-lg-4"
-							style="margin-left: 30px; font-size: 14px;">4000</span> &nbspkbps
-
+							style="margin-left: 30px; font-size: 14px;">Bit rate</span> 
+						<div id="ovbr"><span class="label label-default col-lg-4"
+							style="margin-left: 30px; font-size: 14px;"></span></div>
 					</div>
 				</div>
 			</div>
@@ -333,31 +332,31 @@
 							style="margin-left: 70px; font-size: 14px;text-align: center;">Losses</span>
 						<table class="table" style="margin-bottom: -11px;">
 							<tr>
-								<td style="text-align: center;">960x540 pixels
+								<td id="cvres" style="text-align: center;">960x540 pixels
 									</td>
-								<td style="text-align: center;">48kHz
+								<td id="casr" style="text-align: center;">48kHz
 									</td>
 								<td style="text-align: center;">
 									<span style="margin-top: 0px;">video: </span>
-									<span style="margin-left: 10px;">1 %</span>
-									<span class="glyphicon glyphicon-thumbs-up"
+									<span id="cvlos_t" style="margin-left: 10px;">1 %</span>
+									<span id="cvlos_g" class="glyphicon glyphicon-thumbs-up"
 										style="font-size: 20px; top: 5px; left: 15px; color: green;"></span>
 									</td>
 							</tr>
 							<tr>
-								<td style="text-align: center;">49 fps</td>
-								<td style="text-align: center;">stereo
+								<td id="cvfps" style="text-align: center;">49 fps</td>
+								<td id="cach" style="text-align: center;">stereo
 									</td>
 								<td style="text-align: center;">
 									<span style="margin-top: 0px;">audio: </span>
-									<span style="margin-left: 10px;">2 %</span>
-									<span class="glyphicon glyphicon-thumbs-up"
+									<span id="calos_t" style="margin-left: 10px;">2 %</span>
+									<span id="calos_g" class="glyphicon glyphicon-thumbs-up"
 										style="font-size: 20px; top: 5px; left: 15px; color: green;"></span>
 									</td>
 							</tr>
 							<tr>
-								<td style="text-align: center;">4152 kbps</td>
-								<td style="text-align: center;">96 kbps
+								<td id="cvbr" style="text-align: center;">4152 kbps</td>
+								<td id="cabr" style="text-align: center;">96 kbps
 									</td>
 								<td></td>
 							</tr>

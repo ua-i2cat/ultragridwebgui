@@ -143,7 +143,6 @@ class UltraGridAPI < Sinatra::Base
   get '/ultragrid/gui/statistics' do
     #pause ug streaming 
     content_type :json
-    settings.ultragrid.pause_uv
     return settings.ultragrid.get_curr_state.to_json
   end  
 
