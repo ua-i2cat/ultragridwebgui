@@ -236,7 +236,7 @@
 		<!-- video -->
 		<div class="row" id="videoParams"
 			style="margin-left: 0px; margin-bottom: -20px;">
-			<div class="col-md-4" style="margin-right: 5px;">
+			<div class="col-md-4" id="videoParams_setMode" style="margin-right: 5px;">
 				<div class="panel panel-default" style="">
 					<div class="panel-heading" style="text-align:center;">
 						<b>Video: </b>
@@ -279,7 +279,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-3" style="margin-left: -15px;">
+			<div class="col-md-3" id="videoParams_setParams" style="margin-left: -15px;">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<center>
@@ -295,7 +295,7 @@
 							<button type="button" class="btn btn-default">1:4</button>
 						</div>
 					</div>
-					<div class="panel-body" style="margin-top: -15px;">
+					<div class="panel-body" id="framerateManual" style="margin-top: -15px;">
 						<span class="label label-default col-lg-4"
 							style="margin-top: 7px; font-size: 14px;">Frame rate </span>
 						<div class="btn-group" style="margin-left: 10px;">
@@ -304,7 +304,7 @@
 							<button type="button" class="btn btn-default">1:4</button>
 						</div>
 					</div>
-					<div class="panel-body" style="margin-top: -15px;">
+					<div class="panel-body" id="bitrateManual" style="margin-top: -15px;">
 						<span class="label label-default col-lg-4"
 							style="margin-top: 7px; font-size: 14px;">Bit rate </span>
 						<div class="btn-group" style="margin-left: 10px;">
@@ -332,31 +332,44 @@
 							style="margin-left: 70px; font-size: 14px;text-align: center;">Losses</span>
 						<table class="table" style="margin-bottom: -11px;">
 							<tr>
-								<td id="cvres" style="text-align: center;">960x540 pixels
+								<td style="text-align: center; width: 160px">
+										<div id="cvres">
+										</div>
 									</td>
-								<td id="casr" style="text-align: center;">48kHz
+								<td style="text-align: center; width: 160px"> 
+										<div id="casr">
+										</div>
 									</td>
-								<td style="text-align: center;">
-									<span style="margin-top: 0px;">video: </span>
-									<span id="cvlos_t" style="margin-left: 10px;">1 %</span>
-									<span id="cvlos_g" class="glyphicon glyphicon-thumbs-up"
-										style="font-size: 20px; top: 5px; left: 15px; color: green;"></span>
-									</td>
+								<td>
+									<div id="clos_t" >
+										<span style="margin-left:35px;text-align: center; width: 160px">0.00 %</span>
+									</div>
+								</td>
 							</tr>
 							<tr>
-								<td id="cvfps" style="text-align: center;">49 fps</td>
-								<td id="cach" style="text-align: center;">stereo
+								<td style="text-align: center; width: 160px">
+										<div id="cvfps">
+										</div>
 									</td>
-								<td style="text-align: center;">
-									<span style="margin-top: 0px;">audio: </span>
-									<span id="calos_t" style="margin-left: 10px;">2 %</span>
-									<span id="calos_g" class="glyphicon glyphicon-thumbs-up"
-										style="font-size: 20px; top: 5px; left: 15px; color: green;"></span>
+								<td style="text-align: center; width: 160px">
+										<div id="cach">
+										</div>
 									</td>
+								<td>
+									<div id="clos_g" >
+										<span class="glyphicon glyphicon-thumbs-up"
+											style="margin-left:30px;font-size: 20px; top: 0px; left: 15px; color: green;"></span>
+									</div>
+								</td>
 							</tr>
 							<tr>
-								<td id="cvbr" style="text-align: center;">4152 kbps</td>
-								<td id="cabr" style="text-align: center;">96 kbps
+								<td style="text-align: center; width: 160px">
+										<div id="cvbr">
+										</div>
+									</td>
+								<td style="text-align: center; width: 160px">
+										<div id="cabr">
+										</div>
 									</td>
 								<td></td>
 							</tr>
@@ -394,6 +407,7 @@
 	<script type="text/javascript" src="/js/jquery.dropdown.js"></script>
 	<script src="/bs/dist/js/bootstrap.min.js"></script>
 	<script src="/bs/assets/js/holder.js"></script>
+	<script src="/js/utils.js"></script>
 	<script src="/js/app.js"></script>
 	<script type="text/javascript">
 		$( function() {	

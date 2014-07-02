@@ -34,15 +34,14 @@ module RUltraGrid
   end
 
   class UltraGrid
-
     @@uvgui_state = {:have_uv => false,
-      :checked_local => false, :checked_remote => false,
+      :checked_local => false, :try_check_remote => false, :checked_remote => false,
       :uv_running => false, :uv_params => "",   #TODO data persistent with mongodb (if reinit interface re-check if uv exists and uv running params...)
       :uv_play => false, :uv_vbcc => false,
       :host => "127.0.0.1", :port => 0,
       :o_fps => 0, :o_br => 0, :o_size => "0x0",
       :c_fps => 0, :c_br => 0, :c_size => "0x0",
-      :losses => 0}
+      :losses => 0, :rtp_protocol => "uv"}
 
     at_exit {
       #define method to join thread and exit properly
@@ -63,11 +62,14 @@ module RUltraGrid
       @@uvgui_state[:host] = "127.0.0.1"
       @@uvgui_state[:port] = 0
       @@uvgui_state[:checked_local] = false
+      @@uvgui_state[:try_check_remote] = false
       @@uvgui_state[:checked_remote] = false
       @@uvgui_state[:uv_running] = false
       @@uvgui_state[:uv_params] = ""
+      @@uvgui_state[:rtp_protocol] = "uv"
       @@uvgui_state[:uv_play] = false
       @@uvgui_state[:uv_vbcc] = false
+      @@uvgui_state[:losses] = 0
     end
 
     def initialize(host, port)
@@ -82,6 +84,10 @@ module RUltraGrid
 
     def set_control_port(input)
       @@uvgui_state[:port] = input[:port]
+    end
+
+    def set_rtp_protocol(input)
+      @@uvgui_state[:rtp_protocol] = input[:rtp_protocol]
     end
 
     #
@@ -150,14 +156,9 @@ module RUltraGrid
             Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
               while line = stdout_err.gets
                 puts line
-                #TODO here socket push to gui
                 #TODO set timeout for RX OK! to 30s, then shutdown by socket
-#                :o_fps => 0, :o_br => 0, :o_size => "0x0",
-#                :c_fps => 0, :c_br => 0, :c_size => "0x0",
-#                :losses => 0
-                
+
                 #CASE 1 [GET PARAMS]
-                #string.partition('=').last
                 if line.include?"[OFPS]"
                   @@uvgui_state[:o_fps] = line.partition(']').last
                 end
@@ -170,17 +171,18 @@ module RUltraGrid
                 if line.include?"[CFPS]"
                   @@uvgui_state[:c_fps] = line.partition(']').last
                 end
-                if line.include?"[CFPS]"
+                if line.include?"[CRES]"
                   @@uvgui_state[:c_size] = line.partition(']').last
                 end
                 if line.include?"[CBR]"
                   @@uvgui_state[:c_br] = line.partition(']').last
                 end
                 #CASE 2 [GET RX LOSSES]
+                if line.include?"[LOSS]"
+                  @@uvgui_state[:losses] = line.partition(']').last
+                end
 
-                #CASE 3 [erase AUDIO AND VIDEO MSG for CHECKS]
-
-                #CASE 4 [PUTS UG OUTPUT TO SOCKET FEEDBACK]
+                #CASE 3 [PUTS UG OUTPUT TO SOCKET FEEDBACK]
 
               end
               exit_status = wait_thr.value
@@ -260,13 +262,6 @@ module RUltraGrid
         @@uvgui_state[:uv_vbcc] = false
       end
     end
-    #def set_anyparam_rc
-    #  begin
-    #    response = send_and_wait("compress param bitrate=1m\n")
-    #  rescue JSON::ParserError, Errno::ECONNREFUSED => e
-    #    puts "SOCKET ERROR: #{e.message}"
-    #  end
-    #  puts "RESPONSE---> #{response}"
 
     def uv_test_local(cmd)
       test_duration = 2 #seconds
@@ -347,6 +342,7 @@ module RUltraGrid
             output = stdout_err.read_nonblock(4096)
             if output.include?"[RX] OK!"
               rx_error = false
+              @@uvgui_state[:try_check_remote] = false
             end
 
           rescue IO::WaitReadable
@@ -368,25 +364,9 @@ module RUltraGrid
           stdout_err.close if stdout_err
         end
 
+        @@uvgui_state[:try_check_remote] = true if rx_error
+
         return !rx_error
-
-      end
-    end
-
-    #!!!!!!!testing cmds
-    def testing_method_check(cmd)
-      #cmd = cmd.to_s
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-        #           while line = stdout_err.gets
-        #             puts line
-        #           end
-        pid = thread[:pid]
-        start = Time.now
-
-        exit_status = wait_thr.value
-        unless exit_status.success?
-          puts "FAILED !!! #{cmd}"
-        end
 
       end
     end
@@ -414,8 +394,14 @@ module RUltraGrid
       response = "ok"
       return response
     end
+    #def set_anyparam_rc
+    #  begin
+    #    response = send_and_wait("compress param bitrate=1m\n")
+    #  rescue JSON::ParserError, Errno::ECONNREFUSED => e
+    #    puts "SOCKET ERROR: #{e.message}"
+    #  end
+    #  puts "RESPONSE---> #{response}"
     #END TCP SOCKET MESSAGING
-
   end
 
 end
