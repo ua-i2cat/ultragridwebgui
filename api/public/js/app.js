@@ -38,6 +38,8 @@ $(function() {
 					$('#setcontrol_button').show();
 					$('#setcontrol_input').show();
 					$('#setcontrol_label').show();
+					$('#setprotocol_sel').show();
+					$('#setcontrol_input').show();
 					$("#setcontrol_input").focus();
 				} else {
 					$('#configurationRow').removeClass('is-disabled');
@@ -46,6 +48,7 @@ $(function() {
 					$('#reset_button').addClass('is-enabled');
 					$('#setcontrol_button').hide();
 					$('#setcontrol_input').hide();
+					$('#setprotocol_sel').hide();
 					$('#setcontrol_label').hide();
 				}
 				process_state();
@@ -57,14 +60,14 @@ $(function() {
 	});
 	// First configuration's requirement
 	$("#setcontrol_button").click(function() {
-		set_control_port();
+		set_init_config();
 	});
 	$("#setcontrol_input").keyup(function(e) {
 		if (e.keyCode == 13) {
-			set_control_port();
+			set_init_config();
 		}
 	});
-	function set_control_port() {
+	function set_init_config() {
 		if (!$('#setcontrol_input').val() == '')
 			controlPort = $('#setcontrol_input').val();
 		$.ajax({
@@ -75,13 +78,39 @@ $(function() {
 			success : function(msg) {
 				console.log(msg);
 				state = msg;
-				process_state();
 			},
 			error : function(xhr, msg) {
 				console.log('ERROR: ' + msg + '\n' + xhr.responseText);
 			}
 		});
+		switch($('#cd-dropdown-protocol').find(":selected").val()){
+			case "1":
+				set_uv_protocol("uv");
+				break;
+			case "2":
+				set_uv_protocol("std");
+				break;
+			default:
+				set_uv_protocol("uv");
+				break;
+		}
 		location.reload();
+	}
+	
+	function set_uv_protocol(prot){
+		$.ajax({
+			type : 'POST',
+			url : "/ultragrid/gui/set_rtpprotocol",
+			data : "rtp_protocol=" + prot,
+			async : false,
+			success : function(msg) {
+				console.log(msg);
+				state = msg;
+			},
+			error : function(xhr, msg) {
+				console.log('ERROR: ' + msg + '\n' + xhr.responseText);
+			}
+		});
 	}
 
 	/**

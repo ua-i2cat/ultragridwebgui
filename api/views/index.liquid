@@ -44,11 +44,20 @@
 				style="width:90px;margin-top: -70px;margin-left:20px;"></button>
 			<button id="setcontrol_button" type="submit" class="btn btn-success btn-sm"
 				style="width:85px;margin-top: -110px;margin-left:765px;"><span class="glyphicon glyphicon glyphicon-wrench"> Set </span></button>
-			<div class="form-group" style="width:70px;height:15px;margin-left:680px; margin-top: -80px;">
+			<div class="form-group" style="width:70px;height:15px;margin-left:680px; margin-top: -95px;">
 				<input id="setcontrol_input" type="text" class="form-control" style="text-align:center;" placeholder="5054"></input>
 			</div>
-			<div id="setcontrol_label"  class="form-group" style="margin-top:-24px;margin-left: 565px;" >
+			<div id="setcontrol_label"  class="form-group" style="margin-top:-25px;margin-left: 565px;" >
 				<span class="label label-default" style="padding-top:8px;padding-bottom:10px;font-size: 14px;"> Control port: </span>
+			</div>
+			<div id="setprotocol_sel" class="form-group">
+				<div class="fleft" style="margin-left: 565px;">
+					<select id="cd-dropdown-protocol" class="cd-select">
+						<option value="-1" selected>set protocol (default: ultragrid)</option>
+						<option value="1">ultragrid</option>
+						<option value="2">standard</option>
+					</select>
+				</div>
 			</div>
 		</div>
 		

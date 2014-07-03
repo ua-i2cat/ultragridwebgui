@@ -88,6 +88,13 @@ class UltraGridAPI < Sinatra::Base
     settings.ultragrid.set_control_port(params)
     return settings.ultragrid.get_curr_state.to_json
   end
+  
+  post '/ultragrid/gui/set_rtpprotocol' do
+    #check local config. or remote config.&connectivity
+    content_type :json
+    settings.ultragrid.set_rtp_protocol(params)
+    return settings.ultragrid.get_curr_state.to_json
+  end
 
   post '/ultragrid/gui/check' do
     #check local config. or remote config.&connectivity

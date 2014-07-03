@@ -35,7 +35,8 @@ module RUltraGrid
 
   class UltraGrid
     @@uvgui_state = {:have_uv => false,
-      :checked_local => false, :try_check_remote => false, :checked_remote => false,
+      :checked_local => false, :try_check_remote => false, 
+      :checked_remote => false,
       :uv_running => false, :uv_params => "",   #TODO data persistent with mongodb (if reinit interface re-check if uv exists and uv running params...)
       :uv_play => false, :uv_vbcc => false,
       :host => "127.0.0.1", :port => 0,
@@ -88,6 +89,7 @@ module RUltraGrid
 
     def set_rtp_protocol(input)
       @@uvgui_state[:rtp_protocol] = input[:rtp_protocol]
+      puts @@uvgui_state[:rtp_protocol]
     end
 
     #
@@ -134,6 +136,10 @@ module RUltraGrid
     end
 
     def remote_check(cmd)
+      if @@uvgui_state[:rtp_protocol].eql?("std")
+        cmd << " --rtsp-server"
+      end
+      puts cmd
       puts "GOT REMOTE CHECK MODE\n"
       @@uvgui_state[:checked_remote] = false
       @@uvgui_state[:uv_params] = cmd
@@ -325,7 +331,7 @@ module RUltraGrid
     end
 
     def uv_test_remote(cmd)
-      test_duration = 3 #seconds
+      test_duration = 10 #seconds
       puts cmd
 
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
