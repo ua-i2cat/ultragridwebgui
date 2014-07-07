@@ -35,7 +35,7 @@ module RUltraGrid
 
   class UltraGrid
     @@uvgui_state = {:have_uv => false,
-      :checked_local => false, :try_check_remote => false, 
+      :checked_local => false, :try_check_remote => false,
       :checked_remote => false,
       :uv_running => false, :uv_params => "",   #TODO data persistent with mongodb (if reinit interface re-check if uv exists and uv running params...)
       :uv_play => false, :uv_vbcc => false,
@@ -43,6 +43,14 @@ module RUltraGrid
       :o_fps => 0, :o_br => 0, :o_size => "0x0",
       :c_fps => 0, :c_br => 0, :c_size => "0x0",
       :losses => 0, :rtp_protocol => "uv"}
+
+    @@uvgui_curr_stream_config = {
+      :curr_size => "H",
+      :curr_fps => "H",
+      :curr_br => "H"
+    }
+
+    @@response = { :result => false, :curr_stream_config => @@uvgui_curr_stream_config }
 
     at_exit {
       #define method to join thread and exit properly
@@ -247,9 +255,6 @@ module RUltraGrid
     end
 
     def set_cc_mode(input)
-      puts "\n"
-      puts !@@uvgui_state[:uv_vbcc] && input[:mode].eql?("auto")
-      puts "\n"
       if !@@uvgui_state[:uv_vbcc] && input[:mode].eql?("auto")
         #activate vbcc
         response = send_and_wait("capture.filter vbcc\n")
@@ -331,7 +336,7 @@ module RUltraGrid
     end
 
     def uv_test_remote(cmd)
-      test_duration = 10 #seconds
+      test_duration = 4 #seconds
       puts cmd
 
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
@@ -376,11 +381,145 @@ module RUltraGrid
 
       end
     end
+
+    
+    #MANUAL STREAM CONFIGURATIONS
+    def apply_curr_stream_size_config
+      case @@uvgui_curr_stream_config[:curr_size]
+      when "H"
+        #nothing
+      when "M"
+        send_config_cmd("capture.filter resize:1/2\n")
+      when "L"
+        send_config_cmd("capture.filter resize:1/4\n")
+      else
+        puts "error when applying current stream size config"
+      end
+    end
+    def apply_curr_stream_fps_config
+      case @@uvgui_curr_stream_config[:curr_fps]
+      when "H"
+        #nothing    
+      when "M"
+        send_config_cmd("capture.filter every:1/2\n")
+      when "L"
+        send_config_cmd("capture.filter every:1/4\n")
+      else
+        puts "error when applying current stream fps config"
+      end
+    end
+    def apply_curr_stream_br_config
+      case @@uvgui_curr_stream_config[:curr_br]
+      when "H"
+        @br =  @@uvgui_state[:o_br].to_f * 1024
+        return send_config_cmd("compress param bitrate=#{@br}\n")
+      when "M"
+        @br =  (@@uvgui_state[:o_br].to_f / 2) * 1024
+        return send_config_cmd("compress param bitrate=#{@br}\n")
+      when "L"
+        @br =  (@@uvgui_state[:o_br].to_f / 4) * 1024
+        return send_config_cmd("compress param bitrate=#{@br}\n")
+      else
+        puts "error when applying current stream bitrate config"
+        @@response[:result] = false
+        return @@response
+      end
+    end
+    
+    def set_size(input)
+      val = input[:value]
+      case val
+      when "H"
+        send_and_wait("capture.filter flush\n")
+        apply_curr_stream_fps_config
+        @@uvgui_curr_stream_config[:curr_size] = "H"
+        @@response[:result] = true
+        return @@response
+      when "M"
+        send_and_wait("capture.filter flush\n")
+        apply_curr_stream_fps_config
+        @@uvgui_curr_stream_config[:curr_size] = "M"
+        return send_config_cmd("capture.filter resize:1/2\n")
+      when "L"
+        send_and_wait("capture.filter flush\n")
+        apply_curr_stream_fps_config
+        @@uvgui_curr_stream_config[:curr_size] = "L"
+        return send_config_cmd("capture.filter resize:1/4\n")
+      else
+        puts "You gave me #{val} -- valid inputs are {H, M, L}."
+        @@response[:result] = false
+        return @@response
+      end
+    end
+
+    def set_fps(input)
+      if !@@uvgui_state[:uv_vbcc]
+        val = input[:value]
+        case val
+        when "H"
+          send_and_wait("capture.filter flush\n")
+          apply_curr_stream_size_config
+          @@uvgui_curr_stream_config[:curr_fps] = "H"
+          @@response[:result] = true
+          return @@response
+        when "M"
+          send_and_wait("capture.filter flush\n")
+          apply_curr_stream_size_config
+          @@uvgui_curr_stream_config[:curr_fps] = "M"
+          return send_config_cmd("capture.filter every:1/2\n")
+        when "L"
+          send_and_wait("capture.filter flush\n")
+          apply_curr_stream_size_config
+          @@uvgui_curr_stream_config[:curr_fps] = "L"
+          return send_config_cmd("capture.filter every:1/4\n")
+        else
+          puts "You gave me #{val} -- valid inputs are {H, M, L}."
+          @@response[:result] = false
+          return @@response
+        end
+      end
+    end
+
+    def set_br(input)
+      if !@@uvgui_state[:uv_vbcc]
+        val = input[:value]
+        puts "\n"
+        @scale = ""
+        case val
+        when "H"
+          @@uvgui_curr_stream_config[:curr_br] = "H"
+          return apply_curr_stream_br_config
+        when "M"
+          @@uvgui_curr_stream_config[:curr_br] = "M"
+          return apply_curr_stream_br_config
+        when "L"
+          @@uvgui_curr_stream_config[:curr_br] = "L"
+          return apply_curr_stream_br_config
+        else
+          puts "You gave me #{val} -- valid inputs are {H, M, L}."
+          @@response[:result] = false
+          return @@response
+        end
+      end
+    end
     #END ULTRAGRID SYSTEM WORKFLOWS
 
     #
     #TCP SOCKET MESSAGING TO ULTRAGRID
     #
+    def send_config_cmd(cmd)
+      if @@uvgui_state[:uv_running]
+        response = send_and_wait(cmd)
+        if response.nil?
+          @@response[:result] = false
+          return @@response
+        else
+          @@response[:result] = true
+          return @@response
+        end
+      end
+    end
+    
     def send_and_wait(cmd)
       #request = cmd.to_s
       request = cmd.to_s

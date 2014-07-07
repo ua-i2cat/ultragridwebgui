@@ -15,8 +15,6 @@ var audioRxPort = "5006";
 var audioTxPort = "5006";
 var audioCMD = "";
 var cmnd = "";
-var statsInterval;
-var statsRefreshInterval = 1000; // 1 second
 var state;
 
 $(function() {
@@ -382,5 +380,79 @@ $(function() {
 		});
 		location.reload();
 	});
-
+	
+	//manual control
+	//resolution
+	$('#set_res_man').on('click', function(event) {
+	    var value = $(event.target).closest('button').text();
+	    console.log(value);
+		$.ajax({
+			type : 'POST',
+			url : "/ultragrid/gui/set_size",
+			data : "value=" + value,
+			async : false,
+			success : function(msg) {
+				console.log(msg);
+				if(msg.result == true){
+					$(".btnr").each(function() {
+						//console.log("button: " + $( this ).text() );
+						$(this).removeClass('active');
+					});
+				    $($(event.target).closest('button')).addClass('active');
+				}
+			},
+			error : function(xhr, msg) {
+				console.log('ERROR: ' + msg + '\n' + xhr.responseText);
+			}
+		});
+	});
+	//framerate
+	$('#set_fps_man').on('click', function(event) {
+	    var value = $(event.target).closest('button').text();
+	    console.log(value);
+		$.ajax({
+			type : 'POST',
+			url : "/ultragrid/gui/set_fps",
+			data : "value=" + value,
+			async : false,
+			success : function(msg) {
+				console.log(msg);
+				if(msg.result == true){
+					$(".btnf").each(function() {
+						//console.log("button: " + $( this ).text() );
+						$(this).removeClass('active');
+					});
+				    $($(event.target).closest('button')).addClass('active');
+				}
+			},
+			error : function(xhr, msg) {
+				console.log('ERROR: ' + msg + '\n' + xhr.responseText);
+			}
+		});
+	});
+	//bitrate
+	$('#set_br_man').on('click', function(event) {
+	    var value = $(event.target).closest('button').text();
+	    console.log(value);
+		$.ajax({
+			type : 'POST',
+			url : "/ultragrid/gui/set_br",
+			data : "value=" + value,
+			async : false,
+			success : function(msg) {
+				console.log(msg);
+				if(msg.result == true){
+				    $(".btnb").each(function() {
+						//console.log("button: " + $( this ).text() );
+						$(this).removeClass('active');
+					});
+				    $($(event.target).closest('button')).addClass('active');
+				}
+			},
+			error : function(xhr, msg) {
+				console.log('ERROR: ' + msg + '\n' + xhr.responseText);
+			}
+		});
+	});
+	
 });

@@ -77,7 +77,6 @@ class UltraGridAPI < Sinatra::Base
   end
 
   get '/ultragrid/gui/state' do
-    #stop ug process
     content_type :json
     return settings.ultragrid.get_curr_state.to_json
   end
@@ -138,17 +137,30 @@ class UltraGridAPI < Sinatra::Base
     return settings.ultragrid.get_curr_state.to_json
   end
 
+  get '/ultragrid/gui/statistics' do
+    content_type :json
+    return settings.ultragrid.get_curr_state.to_json
+  end
+  
   post '/ultragrid/gui/ccontrol' do
-    #stop ug process
     content_type :json
     settings.ultragrid.set_cc_mode(params)
     return settings.ultragrid.get_curr_state.to_json
   end
 
-  get '/ultragrid/gui/statistics' do
-    #pause ug streaming
+  post '/ultragrid/gui/set_size' do
     content_type :json
-    return settings.ultragrid.get_curr_state.to_json
+    return settings.ultragrid.set_size(params).to_json
+  end
+  
+  post '/ultragrid/gui/set_fps' do
+    content_type :json
+    return settings.ultragrid.set_fps(params).to_json
+  end
+  
+  post '/ultragrid/gui/set_br' do
+    content_type :json
+    return settings.ultragrid.set_br(params).to_json
   end
 
 end

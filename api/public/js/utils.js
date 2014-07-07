@@ -1,6 +1,10 @@
 /**
  * render gui by state and statistics
  */
+var statsInterval;
+var statsRefreshInterval = 2000; // 2 second
+var intervalSet = false;
+
 function process_state() {
 	$('#play_button').hide();
 	$('#start_button').hide();
@@ -93,6 +97,7 @@ function process_state() {
 		$('#videoParams').addClass('is-disabled');
 		$('#realtimeFeedback').addClass('is-disabled');
 		clearInterval(statsInterval);
+		intervalSet == false;
 	} else {
 		$('#play_button').show();
 		$('#reset_button').hide();
@@ -100,10 +105,14 @@ function process_state() {
 		$('#realtimeFeedback').removeClass('is-disabled');
 		$('#videoParams').addClass('is-enabled');
 		$('#realtimeFeedback').addClass('is-enabled');
-		statsInterval = setInterval(function() {
-			get_statistics();
-		}, statsRefreshInterval);
+		if(intervalSet == false){
+			statsInterval = setInterval(function() {
+				get_statistics();
+			}, statsRefreshInterval);
+			intervalSet == true;
+		}
 	}
+	
 	if (!(state.uv_params.indexOf("-t") > -1)) {
 		$('#videoParams_setMode').removeClass('is-enabled');
 		$('#videoParams_setParams').removeClass('is-enabled');
