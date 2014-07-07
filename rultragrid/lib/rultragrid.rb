@@ -448,13 +448,11 @@ module RUltraGrid
       when "M"
         send_and_wait("capture.filter flush\n")
         apply_curr_stream_fps_config
-        sleep(SLEEP_TIME)
         @@uvgui_curr_stream_config[:curr_size] = "M"
         return send_config_cmd("capture.filter resize:1/2\n")
       when "L"
         send_and_wait("capture.filter flush\n")
         apply_curr_stream_fps_config
-        sleep(SLEEP_TIME)
         @@uvgui_curr_stream_config[:curr_size] = "L"
         return send_config_cmd("capture.filter resize:1/4\n")
       else
@@ -478,7 +476,6 @@ module RUltraGrid
           send_and_wait("capture.filter flush\n")
           @@uvgui_curr_stream_config[:curr_fps] = "M"
           apply_curr_stream_fps_config
-          sleep(SLEEP_TIME)
           apply_curr_stream_size_config
           @@response[:result] = true
           return @@response
@@ -486,7 +483,6 @@ module RUltraGrid
           send_and_wait("capture.filter flush\n")
           @@uvgui_curr_stream_config[:curr_fps] = "L"
           apply_curr_stream_fps_config
-          sleep(SLEEP_TIME)
           apply_curr_stream_size_config
           @@response[:result] = true
           return @@response
