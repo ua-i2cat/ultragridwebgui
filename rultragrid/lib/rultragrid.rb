@@ -49,9 +49,7 @@ module RUltraGrid
       :curr_fps => "H",
       :curr_br => "H"
     }
-    
-    SLEEP_TIME=1.0
-    
+      
     @@response = { :result => false, :curr_stream_config => @@uvgui_curr_stream_config }
 
     at_exit {
