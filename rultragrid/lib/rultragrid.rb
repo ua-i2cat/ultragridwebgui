@@ -49,7 +49,9 @@ module RUltraGrid
       :curr_fps => "H",
       :curr_br => "H"
     }
-
+    
+    SLEEP_TIME=1.0
+    
     @@response = { :result => false, :curr_stream_config => @@uvgui_curr_stream_config }
 
     at_exit {
@@ -411,13 +413,13 @@ module RUltraGrid
     def apply_curr_stream_br_config
       case @@uvgui_curr_stream_config[:curr_br]
       when "H"
-        @br =  @@uvgui_state[:o_br].to_f * 1024
+        @br =  @@uvgui_state[:o_br].to_i * 1024
         return send_config_cmd("compress param bitrate=#{@br}\n")
       when "M"
-        @br =  (@@uvgui_state[:o_br].to_f / 2) * 1024
+        @br =  (@@uvgui_state[:o_br].to_i / 2) * 1024
         return send_config_cmd("compress param bitrate=#{@br}\n")
       when "L"
-        @br =  (@@uvgui_state[:o_br].to_f / 4) * 1024
+        @br =  (@@uvgui_state[:o_br].to_i / 4) * 1024
         return send_config_cmd("compress param bitrate=#{@br}\n")
       else
         puts "error when applying current stream bitrate config"
@@ -438,11 +440,13 @@ module RUltraGrid
       when "M"
         send_and_wait("capture.filter flush\n")
         apply_curr_stream_fps_config
+        sleep(SLEEP_TIME)
         @@uvgui_curr_stream_config[:curr_size] = "M"
         return send_config_cmd("capture.filter resize:1/2\n")
       when "L"
         send_and_wait("capture.filter flush\n")
         apply_curr_stream_fps_config
+        sleep(SLEEP_TIME)
         @@uvgui_curr_stream_config[:curr_size] = "L"
         return send_config_cmd("capture.filter resize:1/4\n")
       else
@@ -466,10 +470,12 @@ module RUltraGrid
           send_and_wait("capture.filter flush\n")
           apply_curr_stream_size_config
           @@uvgui_curr_stream_config[:curr_fps] = "M"
+          sleep(SLEEP_TIME)
           return send_config_cmd("capture.filter every:1/2\n")
         when "L"
           send_and_wait("capture.filter flush\n")
           apply_curr_stream_size_config
+          sleep(SLEEP_TIME)
           @@uvgui_curr_stream_config[:curr_fps] = "L"
           return send_config_cmd("capture.filter every:1/4\n")
         else
@@ -550,4 +556,3 @@ module RUltraGrid
   end
 
 end
-
