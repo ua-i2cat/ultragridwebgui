@@ -177,25 +177,32 @@ module RUltraGrid
                 #CASE 1 [GET PARAMS]
                 if line.include?"[OFPS]"
                   @@uvgui_state[:o_fps] = line.partition(']').last
+                  next
                 end
                 if line.include?"[ORES]"
                   @@uvgui_state[:o_size] = line.partition(']').last
+                  next
                 end
                 if line.include?"[OBR]"
                   @@uvgui_state[:o_br] = line.partition(']').last
+                  next
                 end
                 if line.include?"[CFPS]"
                   @@uvgui_state[:c_fps] = line.partition(']').last
+                  next
                 end
                 if line.include?"[CRES]"
                   @@uvgui_state[:c_size] = line.partition(']').last
+                  next
                 end
                 if line.include?"[CBR]"
                   @@uvgui_state[:c_br] = line.partition(']').last
+                  next
                 end
                 #CASE 2 [GET RX LOSSES]
                 if line.include?"[LOSS]"
                   @@uvgui_state[:losses] = line.partition(']').last
+                  next
                 end
 
                 #CASE 3 [PUTS UG OUTPUT TO SOCKET FEEDBACK]
@@ -428,6 +435,7 @@ module RUltraGrid
       end
     end
     
+    #stable order to apply filters (fps and resize): 1.every 2.resize
     def set_size(input)
       val = input[:value]
       case val
@@ -468,16 +476,20 @@ module RUltraGrid
           return @@response
         when "M"
           send_and_wait("capture.filter flush\n")
-          apply_curr_stream_size_config
           @@uvgui_curr_stream_config[:curr_fps] = "M"
+          apply_curr_stream_fps_config
           sleep(SLEEP_TIME)
-          return send_config_cmd("capture.filter every:1/2\n")
+          apply_curr_stream_size_config
+          @@response[:result] = true
+          return @@response
         when "L"
           send_and_wait("capture.filter flush\n")
-          apply_curr_stream_size_config
-          sleep(SLEEP_TIME)
           @@uvgui_curr_stream_config[:curr_fps] = "L"
-          return send_config_cmd("capture.filter every:1/4\n")
+          apply_curr_stream_fps_config
+          sleep(SLEEP_TIME)
+          apply_curr_stream_size_config
+          @@response[:result] = true
+          return @@response
         else
           puts "You gave me #{val} -- valid inputs are {H, M, L}."
           @@response[:result] = false
