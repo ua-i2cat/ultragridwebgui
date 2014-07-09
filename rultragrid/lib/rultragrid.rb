@@ -228,7 +228,78 @@ module RUltraGrid
       end
       # @@uvgui_state[:uv_running] = false
     end
+    def run_uv_cmd(input)
+      @@uvgui_state[:uv_running] = false
+      cmd = input[:cmd]
+      puts "GOING TO RUN FOLLOWING UG INSTANCE:"
+      puts cmd
+      #run thread uv (parsing std and updating uvgui_state)
+      @@uv_thr = Thread.new do   # Calling a class method new
+        begin
+          puts "Starting UltraGrid"
+          Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+            while line = stdout_err.gets
+              puts line
+              #TODO set timeout for RX OK! to 30s, then shutdown by socket
 
+              #CASE 1 [GET PARAMS]
+              if line.include?"[OFPS]"
+                @@uvgui_state[:o_fps] = line.partition(']').last
+                next
+              end
+              if line.include?"[ORES]"
+                @@uvgui_state[:o_size] = line.partition(']').last
+                next
+              end
+              if line.include?"[OBR]"
+                @@uvgui_state[:o_br] = line.partition(']').last
+                next
+              end
+              if line.include?"[CFPS]"
+                @@uvgui_state[:c_fps] = line.partition(']').last
+                next
+              end
+              if line.include?"[CRES]"
+                @@uvgui_state[:c_size] = line.partition(']').last
+                next
+              end
+              if line.include?"[CBR]"
+                @@uvgui_state[:c_br] = line.partition(']').last
+                next
+              end
+              #CASE 2 [GET RX LOSSES]
+              if line.include?"[LOSS]"
+                @@uvgui_state[:losses] = line.partition(']').last
+                next
+              end
+
+              #CASE 3 [PUTS UG OUTPUT TO SOCKET FEEDBACK]
+
+            end
+            exit_status = wait_thr.value
+            if exit_status.success?
+              puts "WORKED !!! #{cmd}"
+            else
+              puts "FAILED !!! #{cmd}"
+            end
+          end
+        rescue SignalException => e
+          raise e
+        rescue Exception => e
+          puts "No succes on running UltraGrid...!"
+          @@uvgui_state[:uv_running] = false
+          @@uvgui_state[:uv_play] = false
+        end
+        @@uvgui_state[:uv_running] = false
+        @@uvgui_state[:uv_play] = false
+      end
+      @@uvgui_state[:uv_running] = true
+      @@uvgui_state[:uv_play] = true
+
+      # @@uvgui_state[:uv_running] = false
+    end
+
+    
     def stop_uv
       begin
         puts "Stopping UltraGrid"
