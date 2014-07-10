@@ -154,6 +154,12 @@ class UltraGridAPI < Sinatra::Base
     settings.ultragrid.set_cc_mode(params)
     return settings.ultragrid.get_curr_state.to_json
   end
+  
+  post '/ultragrid/gui/set_vbcc' do
+    content_type :json
+    settings.ultragrid.set_cc_mode(params)
+    return settings.ultragrid.get_curr_stream_params.to_json
+  end
 
   post '/ultragrid/gui/set_size' do
     content_type :json

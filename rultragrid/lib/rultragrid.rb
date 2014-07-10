@@ -47,7 +47,8 @@ module RUltraGrid
     @@uvgui_curr_stream_config = {
       :curr_size => "H",
       :curr_fps => "H",
-      :curr_br => "H"
+      :curr_br => "H",
+      :uv_vbcc => false
     }
       
     @@response = { :result => false, :curr_stream_config => @@uvgui_curr_stream_config }
@@ -110,6 +111,11 @@ module RUltraGrid
     def get_curr_state
       #JSON.generate(uvgui_state)
       return @@uvgui_state
+    end
+    
+    def get_curr_stream_params
+      #JSON.generate(uvgui_state)
+      return @@response
     end
 
     def set_curr_state(state)
@@ -338,9 +344,13 @@ module RUltraGrid
         response = send_and_wait("capture.filter vbcc\n")
         if response.nil?
           @@uvgui_state[:uv_vbcc] = false
+          @@response[:result] = false
+          @@uvgui_curr_stream_config[:uv_vbcc] = @@uvgui_state[:uv_vbcc]
         else
           puts "VBCC ACTIVE"
           @@uvgui_state[:uv_vbcc] = true
+          @@response[:result] = true
+          @@uvgui_curr_stream_config[:uv_vbcc] = @@uvgui_state[:uv_vbcc]
         end
       end
       if @@uvgui_state[:uv_vbcc] && input[:mode].eql?("manual")
@@ -349,6 +359,8 @@ module RUltraGrid
         send_and_wait("capture.filter flush\n")
         puts "VBCC DISABLED"
         @@uvgui_state[:uv_vbcc] = false
+        @@response[:result] = true
+        @@uvgui_curr_stream_config[:uv_vbcc] = @@uvgui_state[:uv_vbcc]
       end
     end
 
@@ -504,8 +516,9 @@ module RUltraGrid
       end
     end
     
-    #stable order to apply filters (fps and resize): 1.every 2.resize
+    #NOTE: stable order to apply filters (fps and resize): 1.every 2.resize
     def set_size(input)
+      @@uvgui_curr_stream_config[:uv_vbcc] = @@uvgui_state[:uv_vbcc]
       val = input[:value]
       case val
       when "H"
@@ -532,6 +545,7 @@ module RUltraGrid
     end
 
     def set_fps(input)
+      @@uvgui_curr_stream_config[:uv_vbcc] = @@uvgui_state[:uv_vbcc]
       if !@@uvgui_state[:uv_vbcc]
         val = input[:value]
         case val
@@ -564,6 +578,7 @@ module RUltraGrid
     end
 
     def set_br(input)
+      @@uvgui_curr_stream_config[:uv_vbcc] = @@uvgui_state[:uv_vbcc]
       if !@@uvgui_state[:uv_vbcc]
         val = input[:value]
         puts "\n"
