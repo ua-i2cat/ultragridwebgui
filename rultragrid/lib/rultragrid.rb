@@ -80,6 +80,13 @@ module RUltraGrid
       @@uvgui_state[:uv_play] = false
       @@uvgui_state[:uv_vbcc] = false
       @@uvgui_state[:losses] = 0
+      @@uvgui_state[:o_fps] = 0
+      @@uvgui_state[:o_br] = 0
+      @@uvgui_state[:o_size] = "0x0"
+      @@uvgui_state[:c_fps] = 0
+      @@uvgui_state[:c_br] = 0
+      @@uvgui_state[:c_size] = "0x0"
+        
     end
 
     def initialize(host, port)
@@ -351,6 +358,9 @@ module RUltraGrid
           @@uvgui_state[:uv_vbcc] = true
           @@response[:result] = true
           @@uvgui_curr_stream_config[:uv_vbcc] = @@uvgui_state[:uv_vbcc]
+          @@uvgui_curr_stream_config[:curr_size] = "H"
+          @@uvgui_curr_stream_config[:curr_fps] = "H"
+          @@uvgui_curr_stream_config[:curr_br] = "H"
         end
       end
       if @@uvgui_state[:uv_vbcc] && input[:mode].eql?("manual")
