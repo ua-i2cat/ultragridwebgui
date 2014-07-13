@@ -48,6 +48,7 @@ module RUltraGrid
       :curr_size => "H",
       :curr_fps => "H",
       :curr_br => "H",
+      :o_fps => 0, :o_br => 0, :o_size => "0x0",
       :uv_vbcc => false
     }
       
@@ -188,14 +189,17 @@ module RUltraGrid
                 #CASE 1 [GET PARAMS]
                 if line.include?"[OFPS]"
                   @@uvgui_state[:o_fps] = line.partition(']').last
+                  @@uvgui_curr_stream_config[:o_fps] = @@uvgui_state[:o_fps]
                   next
                 end
                 if line.include?"[ORES]"
                   @@uvgui_state[:o_size] = line.partition(']').last
+                  @@uvgui_curr_stream_config[:o_size] = @@uvgui_state[:o_size]
                   next
                 end
                 if line.include?"[OBR]"
                   @@uvgui_state[:o_br] = line.partition(']').last
+                  @@uvgui_curr_stream_config[:o_br] = @@uvgui_state[:o_br]
                   next
                 end
                 if line.include?"[CFPS]"
@@ -258,14 +262,17 @@ module RUltraGrid
               #CASE 1 [GET PARAMS]
               if line.include?"[OFPS]"
                 @@uvgui_state[:o_fps] = line.partition(']').last
+                @@uvgui_curr_stream_config[:o_fps] = @@uvgui_state[:o_fps]
                 next
               end
               if line.include?"[ORES]"
                 @@uvgui_state[:o_size] = line.partition(']').last
+                @@uvgui_curr_stream_config[:o_size] = @@uvgui_state[:o_size]
                 next
               end
               if line.include?"[OBR]"
                 @@uvgui_state[:o_br] = line.partition(']').last
+                @@uvgui_curr_stream_config[:o_br] = @@uvgui_state[:o_br]
                 next
               end
               if line.include?"[CFPS]"
