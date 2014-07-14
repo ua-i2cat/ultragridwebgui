@@ -226,8 +226,12 @@ module RUltraGrid
               exit_status = wait_thr.value
               if exit_status.success?
                 puts "WORKED !!! #{cmd}"
+                @@uvgui_state[:uv_running] = true
+                @@uvgui_state[:uv_play] = true
               else
                 puts "FAILED !!! #{cmd}"
+                @@uvgui_state[:uv_running] = false
+                @@uvgui_state[:uv_play] = false
               end
             end
           rescue SignalException => e
@@ -299,8 +303,12 @@ module RUltraGrid
             exit_status = wait_thr.value
             if exit_status.success?
               puts "WORKED !!! #{cmd}"
+              @@uvgui_state[:uv_running] = true
+              @@uvgui_state[:uv_play] = true
             else
               puts "FAILED !!! #{cmd}"
+              @@uvgui_state[:uv_running] = false
+              @@uvgui_state[:uv_play] = false
             end
           end
         rescue SignalException => e
@@ -508,9 +516,9 @@ module RUltraGrid
       when "H"
         #nothing    
       when "M"
-        send_config_cmd("capture.filter every:1/2\n")
+        send_config_cmd("capture.filter every:20/#{@@uvgui_state[:o_fps]}\n")
       when "L"
-        send_config_cmd("capture.filter every:1/4\n")
+        send_config_cmd("capture.filter every:15/#{@@uvgui_state[:o_fps]}\n")
       else
         puts "error when applying current stream fps config"
       end
@@ -521,10 +529,10 @@ module RUltraGrid
         @br =  @@uvgui_state[:o_br].to_i * 1024
         return send_config_cmd("compress param bitrate=#{@br}\n")
       when "M"
-        @br =  (@@uvgui_state[:o_br].to_i / 2) * 1024
+        @br =  1500000 #(@@uvgui_state[:o_br].to_i / 2) * 1024
         return send_config_cmd("compress param bitrate=#{@br}\n")
       when "L"
-        @br =  (@@uvgui_state[:o_br].to_i / 4) * 1024
+        @br =  600000  #(@@uvgui_state[:o_br].to_i / 4) * 1024
         return send_config_cmd("compress param bitrate=#{@br}\n")
       else
         puts "error when applying current stream bitrate config"
