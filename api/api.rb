@@ -129,7 +129,7 @@ class UltraGridAPI < Sinatra::Base
   get '/ultragrid/gui/start' do
     #start ug process and play stream
     content_type :json
-    settings.ultragrid.stop_uv_cmd(params)
+    settings.ultragrid.run_uv
     return settings.ultragrid.get_curr_state.to_json
   end
 
