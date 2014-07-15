@@ -87,7 +87,11 @@ module RUltraGrid
       @@uvgui_state[:c_fps] = 0
       @@uvgui_state[:c_br] = 0
       @@uvgui_state[:c_size] = "0x0"
-        
+      @@uvgui_curr_stream_config[:uv_vbcc] = false
+      @@uvgui_curr_stream_config[:curr_size] = "H"
+      @@uvgui_curr_stream_config[:curr_fps] = "H"
+      @@uvgui_curr_stream_config[:curr_br] = "H"
+      @@response[:result] = false
     end
 
     def initialize(host, port)
@@ -173,6 +177,7 @@ module RUltraGrid
     end
 
     def run_uv
+      return if @@uvgui_state[:uv_running] #force only one process when using simple UG GUI
       @@uvgui_state[:uv_running] = false
       cmd = @@uvgui_state[:uv_params]
       puts cmd
@@ -255,6 +260,9 @@ module RUltraGrid
     def run_uv_cmd(input)
       @@uvgui_state[:uv_running] = false
       cmd = input[:cmd]
+      chid = input[:chid]
+      type = input[:type]
+      
       puts "GOING TO RUN FOLLOWING UG INSTANCE:"
       puts cmd
       #run thread uv (parsing std and updating uvgui_state)
@@ -335,6 +343,22 @@ module RUltraGrid
 
     
     def stop_uv
+      begin
+        puts "Stopping UltraGrid"
+        Process.kill("TERM", @@pid)
+        Thread.kill(@@uv_thr)
+      rescue SignalException => e
+        raise e
+      rescue Exception => e
+        puts "No succes on exiting UltraGrid...!"
+      end
+      @@uvgui_state[:uv_running] = false
+      puts "UltraGrid exit success"
+    end
+    
+    def stop_uv_cmd(input)
+      chid = input[:chid]
+      type = input[:type]
       begin
         puts "Stopping UltraGrid"
         Process.kill("TERM", @@pid)

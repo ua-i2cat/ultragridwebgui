@@ -109,17 +109,27 @@ class UltraGridAPI < Sinatra::Base
     return settings.ultragrid.get_curr_state.to_json
   end
 
+  post '/ultragrid/gui/stop_uv_cmd' do
+    #check local config. or remote config.&connectivity
+    content_type :json
+    settings.ultragrid.stop_uv_cmd(params)
+    return settings.ultragrid.get_curr_stream_params.to_json
+  end
+  
   post '/ultragrid/gui/run_uv_cmd' do
     #check local config. or remote config.&connectivity
     content_type :json
     settings.ultragrid.run_uv_cmd(params)
     return settings.ultragrid.get_curr_state.to_json
+#TODO    return settings.ultragrid.get_curr_stream_params.to_json
   end
+  
+  
   
   get '/ultragrid/gui/start' do
     #start ug process and play stream
     content_type :json
-    settings.ultragrid.run_uv
+    settings.ultragrid.stop_uv_cmd(params)
     return settings.ultragrid.get_curr_state.to_json
   end
 
