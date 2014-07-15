@@ -182,6 +182,8 @@ module RUltraGrid
           begin
             puts "Starting UltraGrid"
             Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+              @@pid = wait_thr[:pid]
+
               while line = stdout_err.gets
                 puts line
                 #TODO set timeout for RX OK! to 30s, then shutdown by socket
@@ -249,6 +251,7 @@ module RUltraGrid
       end
       # @@uvgui_state[:uv_running] = false
     end
+    
     def run_uv_cmd(input)
       @@uvgui_state[:uv_running] = false
       cmd = input[:cmd]
@@ -259,6 +262,9 @@ module RUltraGrid
         begin
           puts "Starting UltraGrid"
           Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+            
+            @@pid = wait_thr[:pid]
+
             while line = stdout_err.gets
               puts line
               #TODO set timeout for RX OK! to 30s, then shutdown by socket
@@ -331,6 +337,7 @@ module RUltraGrid
     def stop_uv
       begin
         puts "Stopping UltraGrid"
+        Process.kill("TERM", @@pid)
         Thread.kill(@@uv_thr)
       rescue SignalException => e
         raise e
@@ -338,6 +345,7 @@ module RUltraGrid
         puts "No succes on exiting UltraGrid...!"
       end
       @@uvgui_state[:uv_running] = false
+      puts "UltraGrid exit success"
     end
 
     def play_uv
