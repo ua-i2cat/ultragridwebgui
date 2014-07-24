@@ -422,7 +422,7 @@ module RUltraGrid
     end
 
     def uv_test_local(cmd)
-      test_duration = 2 #seconds
+      test_duration = 7 #seconds
       puts cmd
 
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
@@ -438,16 +438,11 @@ module RUltraGrid
           # Try to read the data
           begin
             output = stdout_err.read_nonblock(4096)
-            if output.include?"OK!"
+            if (output.include?"Decklink capture" || output.include?"V4L2 capture" || output.include?"testcard") && output.include?"seconds ="
               video_error = false
             end
-            if output.include?"KO!"
-              video_error = true
-            end
-            if output.include?"OK!"
+            if output.include?"ALSA capture configuration:"
               audio_error = false
-            else
-              audio_error = true
             end
 
           rescue IO::WaitReadable
