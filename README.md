@@ -1,13 +1,17 @@
 <b>UltraGridWebGUI</b>
 ===============
+<br>
 
 An Ultragrid software middleware to make Ultragid controllable from a REST Web service
+<br><br>
 <br>
+
 <b>Requirements</b><br>
 
 UltraGrid software installation on system
 <br>
-<br>
+<br><br>
+
 
 <b>Installation</b><br>
 
@@ -47,9 +51,11 @@ $cd ../api<br>
 
 $bundle install<br>
 <br>
+<br>
 
 
-<b>Deployment</b>
+<b>Deployment</b><br>
+
 Working modes:<br>
 
 1.-	Rack server deployment<br>
