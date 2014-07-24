@@ -1,45 +1,84 @@
-<b>ultragridwebgui</b>
+<b>UltraGridWebGUI</b>
 ===============
 
 An Ultragrid software middleware to make Ultragid controllable from a REST Web service
+<br>
+<b>Requirements</b><br>
 
-<b>Requirements</b>
 UltraGrid software installation on system
+<br>
+<br>
 
-<b>Installation</b>
-Install Nginx proxy server
-$sudo apt-get install nginx
-$sudo service nginx restart
+<b>Installation</b><br>
 
-First of all, install RVM, a ruby version manager
-$curl -sSL https://get.rvm.io | bash -s stable
-$source ~/.bashrc
+Install Nginx proxy server<br>
 
-After that, install ruby 2.0.0
-$rvm install 2.0.0
-$rvm use 2.0.0
+$sudo apt-get install nginx<br>
 
-Finally, install livemediastremer web GUI
-$git clone https://github.com/ua-i2cat/ultragridwebgui.git
-$cd ultragridwebgui/rultragrid
-$bundle install
-$cd ../api
-$bundle install
+$sudo service nginx restart<br><br>
+
+
+
+First of all, install RVM, a ruby version manager<br>
+
+$curl -sSL https://get.rvm.io | bash -s stable<br>
+
+$source ~/.bashrc<br><br>
+
+
+
+After that, install ruby 2.0.0<br>
+
+$rvm install 2.0.0<br>
+
+$rvm use 2.0.0<br>
+<br>
+
+
+Finally, install livemediastremer web GUI<br>
+
+$git clone https://github.com/ua-i2cat/ultragridwebgui.git<br>
+
+$cd ultragridwebgui/rultragrid<br>
+
+$bundle install<br>
+
+$cd ../api<br>
+
+$bundle install<br>
+<br>
+
 
 <b>Deployment</b>
-Working modes:
-1.-	Rack server deployment
-Recommended only  for testing purposes. Default port is 9292.
-$ cd ultragridwebgui/api
-$ rackup –p<port>
+Working modes:<br>
 
-2.-	Nginx + Unicorn deployment
-Recommended for non testing purposes. 
-It is necessary to configure nginx configuration file correctly. An example can be found in ultragridwebgui/api/nginx.conf.example
-$ cd ultragridwebgui/api
-$ mkdir tmp
-$ mkdir tmp/sockets
-$ mkdir tmp/pids
-$ mkdir log
-$ sudo service nginx restart
-$ unicorn –c unicorn.rb -D
+1.-	Rack server deployment<br>
+
+Recommended only  for testing purposes. Default port is 9292.<br>
+
+$ cd ultragridwebgui/api<br>
+
+$ rackup –p<port><br>
+<br>
+
+
+2.-	Nginx + Unicorn deployment<br>
+
+Recommended for non testing purposes. <br>
+
+It is necessary to configure nginx configuration file correctly. An example can be found in ultragridwebgui/api/nginx.conf.example<br>
+
+$ cd ultragridwebgui/api<br>
+
+$ mkdir tmp<br>
+
+$ mkdir tmp/sockets<br>
+
+$ mkdir tmp/pids<br>
+
+$ mkdir log<br>
+
+$ sudo service nginx restart<br>
+
+$ unicorn –c unicorn.rb -D<br>
+
