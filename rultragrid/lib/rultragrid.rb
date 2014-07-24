@@ -438,10 +438,22 @@ module RUltraGrid
           # Try to read the data
           begin
             output = stdout_err.read_nonblock(4096)
-            if (output.include?"Decklink capture" || output.include?"V4L2 capture" || output.include?"testcard") && output.include?"seconds ="
-              video_error = false
+            if output.include?"Decklink capture"
+              if output.include?"seconds ="
+                video_error = false
+              end
             end
-            if output.include?"ALSA capture configuration:"
+            if output.include?"V4L2 capture"
+              if output.include?"seconds ="
+                video_error = false
+              end
+            end
+            if output.include?"testcard"
+              if output.include?"seconds ="
+                video_error = false
+              end
+            end
+	    if output.include?"ALSA capture configuration:"
               audio_error = false
             end
 
