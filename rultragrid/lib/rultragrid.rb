@@ -51,7 +51,7 @@ module RUltraGrid
       :o_fps => 0, :o_br => 0, :o_size => "0x0",
       :uv_vbcc => false
     }
-      
+
     @@response = { :result => false, :curr_stream_config => @@uvgui_curr_stream_config }
 
     at_exit {
@@ -124,7 +124,7 @@ module RUltraGrid
       #JSON.generate(uvgui_state)
       return @@uvgui_state
     end
-    
+
     def get_curr_stream_params
       #JSON.generate(uvgui_state)
       return @@response
@@ -256,13 +256,13 @@ module RUltraGrid
       end
       # @@uvgui_state[:uv_running] = false
     end
-    
+
     def run_uv_cmd(input)
       @@uvgui_state[:uv_running] = false
       cmd = input[:cmd]
       chid = input[:chid]
       type = input[:type]
-      
+
       puts "GOING TO RUN FOLLOWING UG INSTANCE:"
       puts cmd
       #run thread uv (parsing std and updating uvgui_state)
@@ -270,7 +270,7 @@ module RUltraGrid
         begin
           puts "Starting UltraGrid"
           Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-            
+
             @@pid = wait_thr[:pid]
 
             while line = stdout_err.gets
@@ -341,7 +341,6 @@ module RUltraGrid
       # @@uvgui_state[:uv_running] = false
     end
 
-    
     def stop_uv
       begin
         puts "Stopping UltraGrid"
@@ -355,7 +354,7 @@ module RUltraGrid
       @@uvgui_state[:uv_running] = false
       puts "UltraGrid exit success"
     end
-    
+
     def stop_uv_cmd(input)
       chid = input[:chid]
       type = input[:type]
@@ -453,10 +452,9 @@ module RUltraGrid
                 video_error = false
               end
             end
-	    if output.include?"ALSA capture configuration:"
+            if output.include?"ALSA capture configuration:"
               audio_error = false
             end
-
           rescue IO::WaitReadable
             # A read would block, so loop around for another select
           rescue EOFError
@@ -536,7 +534,6 @@ module RUltraGrid
       end
     end
 
-    
     #MANUAL STREAM CONFIGURATIONS
     def apply_curr_stream_size_config
       case @@uvgui_curr_stream_config[:curr_size]
@@ -550,10 +547,11 @@ module RUltraGrid
         puts "error when applying current stream size config"
       end
     end
+
     def apply_curr_stream_fps_config
       case @@uvgui_curr_stream_config[:curr_fps]
       when "H"
-        #nothing    
+        #nothing
       when "M"
         send_config_cmd("capture.filter every:20/#{@@uvgui_state[:o_fps]}\n")
       when "L"
@@ -562,6 +560,7 @@ module RUltraGrid
         puts "error when applying current stream fps config"
       end
     end
+
     def apply_curr_stream_br_config
       case @@uvgui_curr_stream_config[:curr_br]
       when "H"
@@ -579,7 +578,7 @@ module RUltraGrid
         return @@response
       end
     end
-    
+
     #NOTE: stable order to apply filters (fps and resize): 1.every 2.resize
     def set_size(input)
       @@uvgui_curr_stream_config[:uv_vbcc] = @@uvgui_state[:uv_vbcc]
@@ -681,7 +680,7 @@ module RUltraGrid
         end
       end
     end
-    
+
     def send_and_wait(cmd)
       #request = cmd.to_s
       request = cmd.to_s
