@@ -453,7 +453,7 @@ module RUltraGrid
                 video_error = false
               end
             end
-            if output.include?"ALSA capture configuration:"
+	    if output.include?"ALSA capture configuration:"
               audio_error = false
             end
 
